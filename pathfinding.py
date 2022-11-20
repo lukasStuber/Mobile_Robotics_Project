@@ -13,9 +13,10 @@ from matplotlib import colors
 
 def create_empty_plot(max_val): # create figure/grid of desired dimension
     fig, ax = plt.subplots(figsize=(7,7))
-    major_ticks = np.arange(0, max_val[0]+1, 5)
+    major_ticks_x = np.arange(0, max_val[0]+1, 10)
+    major_ticks_y = np.arange(0, max_val[1]+1, 10)
     minor_ticks = np.arange(0, max_val[1]+1, 1)
-    ax.set_xticks(major_ticks); ax.set_yticks(major_ticks)
+    ax.set_xticks(major_ticks_x); ax.set_yticks(major_ticks_y)
     ax.set_xticks(minor_ticks, minor=True); ax.set_yticks(minor_ticks, minor=True)
     ax.grid(which='minor', alpha=0.2); ax.grid(which='major', alpha=0.5)
     ax.set_xlim([-1,max_val[0]]); ax.set_ylim([-1,max_val[1]])
@@ -71,7 +72,10 @@ def A_Star(start, goal, h, coords, occupancy_grid, movement_type="4N", max_val=(
     print("No path found to goal")
     return [], closedSet
 
-start = (0,0); goal = (43,33); max_val = (50,50)
+"""
+start = (0,0)
+goal = (43,46)
+max_val = (50,50)
 
 # Creating the occupancy grid
 np.random.seed(0)
@@ -92,10 +96,12 @@ h = np.linalg.norm(pos - goal, axis=-1); h = dict(zip(coords, h))
 path, visitedNodes = A_Star(start, goal, h, coords, occupancy_grid, movement_type="8N")
 path = np.array(path).reshape(-1, 2).transpose()
 visitedNodes = np.array(visitedNodes).reshape(-1, 2).transpose()
-# # Display map
-# fig_astar, ax_astar = create_empty_plot(max_val)
-# ax_astar.imshow(occupancy_grid.transpose(), cmap=cmap)
-# ax_astar.scatter(visitedNodes[0], visitedNodes[1], marker="o", color = 'orange')
-# ax_astar.plot(path[0], path[1], marker="o", color = 'blue')
-# ax_astar.scatter(start[0], start[1], marker="o", color = 'green', s=200)
-# ax_astar.scatter(goal[0], goal[1], marker="o", color = 'purple', s=200)
+# Display map
+fig_astar, ax_astar = create_empty_plot(max_val)
+ax_astar.imshow(occupancy_grid.transpose(), cmap=cmap)
+ax_astar.scatter(visitedNodes[0], visitedNodes[1], marker="o", color = 'orange')
+ax_astar.plot(path[0], path[1], marker="o", color = 'blue')
+ax_astar.scatter(start[0], start[1], marker="o", color = 'green', s=200)
+ax_astar.scatter(goal[0], goal[1], marker="o", color = 'purple', s=200)
+plt.show()
+"""
