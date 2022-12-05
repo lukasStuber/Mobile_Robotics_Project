@@ -1,4 +1,5 @@
 # Kalman filter
+# inspired by https://github.com/houman95/Extended-Kalman-Filter-for-Tracking-a-Two-Wheeled-Robot/blob/main/Estimator.m
 
 # Measurements z: position (x,y) [mm] and orientation theta [rad]
 #      (x    )
@@ -33,10 +34,10 @@ class Kalman:
                            [0, 1, 0],
                            [0, 0, 1]])
 
-        # distance between the wheels
-        self.base = 0.1
-        # radius of the wheels
-        self.radius = 0.1
+        # distance between the wheels [mm]
+        self.base = 94
+        # radius of the wheels [mm]
+        self.radius = 22
     
     def set_state(x0, P0):
         # initial state
