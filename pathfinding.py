@@ -49,7 +49,8 @@ def A_Star(start, goal, h, coords, occupancy_grid, movement_type="4N", max_val=(
     elif movement_type == '8N': movements = _get_movements_8n()
     else: raise ValueError('Unknown movement')
 
-    openSet = [start]; closedSet = []; cameFrom = dict()
+    openSet = set(); openSet.add(start)
+    closedSet = set(); cameFrom = dict()
     gScore = dict(zip(coords, [np.inf for x in range(len(coords))])); gScore[start] = 0 # cost of best path from start to node
     fScore = dict(zip(coords, [np.inf for x in range(len(coords))])); fScore[start] = h[start] # add heuristic cost
 
@@ -57,51 +58,49 @@ def A_Star(start, goal, h, coords, occupancy_grid, movement_type="4N", max_val=(
         fScore_openSet = {key:val for (key,val) in fScore.items() if key in openSet}
         current = min(fScore_openSet, key=fScore_openSet.get) # find lowest fScore[] in openSet 
         del fScore_openSet
-        if current == goal: return reconstruct_path(cameFrom, current), closedSet
-        openSet.remove(current); closedSet.append(current)
+        if current == goal: return reconstruct_path(cameFrom, current), list(closedSet)
+        openSet.remove(current); closedSet.add(current)
         for dx, dy, deltacost in movements: #for each neighbor
             neighbor = (current[0]+dx, current[1]+dy)
             if (neighbor[0] >= occupancy_grid.shape[0]) or (neighbor[1] >= occupancy_grid.shape[1]) or (neighbor[0] < 0) or (neighbor[1] < 0): continue
             if (occupancy_grid[neighbor[0], neighbor[1]]) or (neighbor in closedSet): continue
             tentative_gScore = gScore[current] + deltacost # distance from start to neighbor through current
-            if neighbor not in openSet: openSet.append(neighbor)
+            if neighbor not in openSet: openSet.add(neighbor)
             if tentative_gScore < gScore[neighbor]:
                 cameFrom[neighbor] = current
                 gScore[neighbor] = tentative_gScore
                 fScore[neighbor] = gScore[neighbor] + h[neighbor]
     print("No path found to goal")
-    return [], closedSet
+    return [], list(closedSet)
 
-"""
-start = (0,0)
-goal = (43,46)
-max_val = (50,50)
+# start = (0,0)
+# goal = (43,46)
+# max_val = (50,50)
 
-# Creating the occupancy grid
-np.random.seed(0)
-data = np.random.rand(max_val[0], max_val[1]) * 20 # 50 x 50 random values between 0 and 20
-cmap = colors.ListedColormap(['white', 'red'])
-limit = 12 
-occupancy_grid = data.copy()
-occupancy_grid[data > limit] = 1; occupancy_grid[data <= limit] = 0
-# List of all coordinates in the grid
-x,y = np.mgrid[0:max_val[0]:1, 0:max_val[1]:1]
-pos = np.empty(x.shape + (2,))
-pos[:, :, 0] = x; pos[:, :, 1] = y
-pos = np.reshape(pos, (x.shape[0]*x.shape[1], 2))
-coords = list([(int(x[0]), int(x[1])) for x in pos])
-# Define the heuristic, here = distance to goal ignoring obstacles
-h = np.linalg.norm(pos - goal, axis=-1); h = dict(zip(coords, h))
-# Run A*
-path, visitedNodes = A_Star(start, goal, h, coords, occupancy_grid, movement_type="8N")
-path = np.array(path).reshape(-1, 2).transpose()
-visitedNodes = np.array(visitedNodes).reshape(-1, 2).transpose()
-# Display map
-fig_astar, ax_astar = create_empty_plot(max_val)
-ax_astar.imshow(occupancy_grid.transpose(), cmap=cmap)
-ax_astar.scatter(visitedNodes[0], visitedNodes[1], marker="o", color = 'orange')
-ax_astar.plot(path[0], path[1], marker="o", color = 'blue')
-ax_astar.scatter(start[0], start[1], marker="o", color = 'green', s=200)
-ax_astar.scatter(goal[0], goal[1], marker="o", color = 'purple', s=200)
-plt.show()
-"""
+# # Creating the occupancy grid
+# np.random.seed(0)
+# data = np.random.rand(max_val[0], max_val[1]) * 20 # 50 x 50 random values between 0 and 20
+# cmap = colors.ListedColormap(['white', 'red'])
+# limit = 12 
+# occupancy_grid = data.copy()
+# occupancy_grid[data > limit] = 1; occupancy_grid[data <= limit] = 0
+# # List of all coordinates in the grid
+# x,y = np.mgrid[0:max_val[0]:1, 0:max_val[1]:1]
+# pos = np.empty(x.shape + (2,))
+# pos[:, :, 0] = x; pos[:, :, 1] = y
+# pos = np.reshape(pos, (x.shape[0]*x.shape[1], 2))
+# coords = list([(int(x[0]), int(x[1])) for x in pos])
+# # Define the heuristic, here = distance to goal ignoring obstacles
+# h = np.linalg.norm(pos - goal, axis=-1); h = dict(zip(coords, h))
+# # Run A*
+# path, visitedNodes = A_Star(start, goal, h, coords, occupancy_grid, movement_type="8N")
+# path = np.array(path).reshape(-1, 2).transpose()
+# visitedNodes = np.array(visitedNodes).reshape(-1, 2).transpose()
+# # Display map
+# fig_astar, ax_astar = create_empty_plot(max_val)
+# ax_astar.imshow(occupancy_grid.transpose(), cmap=cmap)
+# ax_astar.scatter(visitedNodes[0], visitedNodes[1], marker="o", color = 'orange')
+# ax_astar.plot(path[0], path[1], marker="o", color = 'blue')
+# ax_astar.scatter(start[0], start[1], marker="o", color = 'green', s=200)
+# ax_astar.scatter(goal[0], goal[1], marker="o", color = 'purple', s=200)
+# plt.show()
