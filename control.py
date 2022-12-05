@@ -7,18 +7,18 @@ from RepeatedTimer import RepeatedTimer
 WHEEL_DIST = 95 # mm
 SPEED_TO_MMS = 0.32
 # TIMERS
-MOVE_INTERVAL = 0.22 # s # leave time for get_prox() and move() (100ms each)
+MOVE_INTERVAL = 0.21 # s # leave time for get_prox() and move() (100ms each)
 ODOMETRY_INTERVAL = 0.025 # s
 # MOVEMENT
 STANDARD_SPEED = 200 # 32cm/5s
 DIST_TOL = 10 # mm
 ANGLE_TOL = 0.1 # rad
-MAX_TIME = 0.5
+MAX_TIME = 0.3
 # OBSTACLE AVOIDANCE
-PROX_THRESHOLD = 100
+PROX_THRESHOLD = 1000
 OBST_SPEED = 200
-OBST_TURN_SPEED = 30
-OBST_TIME = 0.5
+OBST_TURN_SPEED = 20
+OBST_TIME = 1
 
 class ThymioControl:
     def __init__(self, position=(0,0), angle=0):
@@ -101,7 +101,7 @@ class ThymioControl:
         self.odometry_timer.stop()
         self.stop_timer.cancel()
         self.stop()
-        # self.crab_rave()
+        #self.crab_rave()
     
 # OBSTACLE AVOIDANCE
     def get_prox(self):
@@ -113,7 +113,9 @@ class ThymioControl:
         print('avoiding')
         self.stop_planned = False
         self.stop_timer.cancel()
-        speed = np.dot(self.proxs, [[4, -4], [2, -2], [-1, 1], [-2, 2], [-4, 4]])/100
+        speed = np.dot(self.proxs, [[1, -1], [3, -3], [-3, 3], [-3, 3], [-1, 1]])/100
+        if ((self.proxs[2]+self.proxs[1]+self.proxs[3])<30):
+           speed[0] += 100; speed[1] += 100
         self.obst_direction = 1 if speed[0] > speed[1] else -1 # turn left when obstacle on the left and vice versa
         self.move(speed[0], speed[1])
 
@@ -136,7 +138,7 @@ class ThymioControl:
     def get_estimate(self):
         return (self.position[0]*0.001, self.position[1]*0.001, self.angle) # return in meters for kalman filter
 
-# OTHER
+# OTHER :)))
     def crab_rave(self):
         program = '''
 var note[19] = [2349, 1976, 1568, 1568, 2349, 2349, 1760, 1397, 1397, 2349, 2349, 1760, 1397, 1397, 2094, 2094, 1319, 1319, 1397]
