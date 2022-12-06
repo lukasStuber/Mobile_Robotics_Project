@@ -136,7 +136,10 @@ class ThymioControl:
         print(self.position, self.angle*180/math.pi)
 
     def get_estimate(self):
-        return (self.position[0]*0.001, self.position[1]*0.001, self.angle) # return in meters for kalman filter
+        return (self.position[0]*0.001, self.position[1]*0.001, self.angle) # in meters for kalman filter
+    
+    def get_speed(self):
+        return SPEED_TO_MMS*self.speed_target # in mm/s for kalman filter
 
 # OTHER :)))
     def crab_rave(self):
