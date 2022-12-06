@@ -26,3 +26,8 @@ WHEEL_RADIUS = 22   #[mm]
 
 NOMINAL_AREA_LENGTH = 1600  # [mm]
 NOMINAL_AREA_WIDTH = 840    # [mm]
+
+NOISE_POS_XY = 0.64         # [mm2]
+NOISE_POS_THETA = 1         # [rad^2]
+NOISE_MEASURE_XY = 0.1      # [mm2]
+NOISE_MEASURE_THETA = 0.5     # [rad^2]
