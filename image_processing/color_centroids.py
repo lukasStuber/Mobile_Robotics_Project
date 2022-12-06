@@ -101,9 +101,9 @@ def get_centroids(camera_device, corners, destination_corners, HSV_preset, kerne
         y_arrow = int(y_thymio + np.sin(theta_thymio) * arrow_len)
         ## [Compute centroids]
 
-        cv.circle(cropped_frame, (x_goal, y_goal), 5, (0, 0, 255), -1)
-        cv.circle(cropped_frame, (x_thymio, y_thymio), 5, (255, 255, 255), -1)
-        cv.arrowedLine(cropped_frame, (x_thymio, y_thymio), ((x_arrow , y_arrow)), (255, 255, 255), 5)
+        cv.circle(cropped_frame, (x_goal, y_goal), 2, (0, 0, 255), -1)
+        cv.circle(cropped_frame, (x_thymio, y_thymio), 2, (255, 255, 255), -1)
+        cv.arrowedLine(cropped_frame, (x_thymio, y_thymio), ((x_arrow , y_arrow)), (255, 255, 255), 2)
 
         ## [convert indices to mm]
         x_goal, y_goal = indices_to_mm(orig_frame, cropped_frame, (x_goal, y_goal))
@@ -125,7 +125,7 @@ def get_centroids(camera_device, corners, destination_corners, HSV_preset, kerne
     
     if real_time:
         cv.destroyWindow(window_name)
-    return  centroids, cropped_frame
+    return  centroids, theta_thymio, cropped_frame
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Code for Thresholding Operations using inRange.')

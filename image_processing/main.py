@@ -27,7 +27,7 @@ if __name__ == '__main__':
     cv.namedWindow("Localization Result")
     centroids = {'goal': (0, 0), 'thymio': (0, 0), 'green': (0, 0), 'blue': (0, 0)}
     while True:
-        centroids, localization = get_centroids(args.camera, corners, destination_corners, refined_color_dict_HSV, kernels, openings, prev_centroids=centroids, orig_frame=(120, 80), real_time=False)
+        centroids, theta_thymio, localization = get_centroids(args.camera, corners, destination_corners, refined_color_dict_HSV, kernels, openings, prev_centroids=centroids, orig_frame=(120, 80), real_time=False)
         print(centroids['thymio'])
         cv.imshow("Localization Result", localization)
         key = cv.waitKey(30)
