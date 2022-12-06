@@ -21,7 +21,7 @@ def indices_to_mm(orig_frame, cropped_frame, centroid, reverse=False):
     return (int(h*x/H), int(l*y/L))
 ## [convert indices to mm]
 
-def get_centroids(camera_device, x, y, w, h, HSV_preset, kernel_preset, opening_preset, prev_centroids=None, orig_frame=(120, 80), real_time=False):
+def get_centroids(camera_device, corners, destination_corners, HSV_preset, kernel_preset, opening_preset, prev_centroids=None, orig_frame=(120, 80), real_time=False):
     color_masks = dict()
     window_name = "Thymio Localization"
 
@@ -39,11 +39,12 @@ def get_centroids(camera_device, x, y, w, h, HSV_preset, kernel_preset, opening_
     while True:
         _, frame = cap.read()
 
-        ## [rescaling]
+        ## [rescaling and homomorphy]
         scale_percent = 20
         frame = rescale_frame(frame, scale_percent)
-        cropped_frame = frame[y:y+h+1, x:x+w+1, :].copy()
-        ## [rescaling]
+        M = cv.getPerspectiveTransform(np.float32(corners), np.float32(destination_corners))
+        cropped_frame = cv.warpPerspective(frame, M, (destination_corners[2][0], destination_corners[2][1]), flags=cv.INTER_LINEAR)
+        ## [rescaling and homomorphy]
 
         cropped_frame_HSV = cv.cvtColor(cropped_frame, cv.COLOR_BGR2HSV)
 

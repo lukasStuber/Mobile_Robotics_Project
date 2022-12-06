@@ -105,7 +105,7 @@ def rescale_frame(frame, scale_percent=20):
     return cv.resize(frame, dsize)
 ## [rescale frame to speed up computation]
 
-def get_color_mask(camera_device, x, y, w, h, HSV_preset=color_dict_HSV, kernel_preset=None, opening_preset=None):
+def get_color_mask(camera_device, corners, destination_corners, HSV_preset=color_dict_HSV, kernel_preset=None, opening_preset=None):
     global low_H
     global high_H
     global low_S
@@ -154,11 +154,12 @@ def get_color_mask(camera_device, x, y, w, h, HSV_preset=color_dict_HSV, kernel_
             if frame is None:
                 break
 
-            ## [rescaling]
+            ## [rescaling and homomorphy]
             scale_percent = 20
             frame = rescale_frame(frame, scale_percent)
-            cropped_frame = frame[y:y+h+1, x:x+w+1, :].copy()
-            ## [rescaling]
+            M = cv.getPerspectiveTransform(np.float32(corners), np.float32(destination_corners))
+            cropped_frame = cv.warpPerspective(frame, M, (destination_corners[2][0], destination_corners[2][1]), flags=cv.INTER_LINEAR)
+            ## [rescaling and homomorphy]
 
             ## [HSV thresholding]
             cropped_frame_HSV = cv.cvtColor(cropped_frame, cv.COLOR_BGR2HSV)

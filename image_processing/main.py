@@ -12,11 +12,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     ##[Parking segmentation]
-    x, y, w, h = set_parking_limits(args.camera)
+    corners, destination_corners = set_parking_limits(args.camera)
     ##[Parking segmentation]
 
     ##[Color segmentation]
-    segmentation, refined_color_dict_HSV, kernels, openings = get_color_mask(args.camera, x, y, w, h)
+    segmentation, refined_color_dict_HSV, kernels, openings = get_color_mask(args.camera, corners, destination_corners)
     cv.namedWindow("Segmentation Result")
     cv.imshow("Segmentation Result", segmentation)
     key = cv.waitKey(0)
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     cv.namedWindow("Localization Result")
     centroids = {'goal': (0, 0), 'thymio': (0, 0), 'green': (0, 0), 'blue': (0, 0)}
     while True:
-        centroids, localization = get_centroids(args.camera, x, y, w, h, refined_color_dict_HSV, kernels, openings, prev_centroids=centroids, orig_frame=(120, 80), real_time=False)
+        centroids, localization = get_centroids(args.camera, corners, destination_corners, refined_color_dict_HSV, kernels, openings, prev_centroids=centroids, orig_frame=(120, 80), real_time=False)
         print(centroids['thymio'])
         cv.imshow("Localization Result", localization)
         key = cv.waitKey(30)

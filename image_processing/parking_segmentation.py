@@ -83,6 +83,45 @@ def rescale_frame(frame, scale_percent=20):
     return cv.resize(frame, dsize)
 ## [rescale frame to speed up computation]
 
+## [functions for homomorphy]
+def order_points(pts):
+    '''Rearrange coordinates to order:
+      top-left, top-right, bottom-right, bottom-left'''
+    rect = np.zeros((4, 2), dtype='float32')
+    pts = np.array(pts)
+    # Make sure contours array is 2d
+    pts = np.squeeze(pts)
+    s = pts.sum(axis=1)
+    # Top-left point will have the smallest sum.
+    rect[0] = pts[np.argmin(s)]
+    # Bottom-right point will have the largest sum.
+    rect[2] = pts[np.argmax(s)]
+ 
+    diff = np.diff(pts, axis=1)
+    # Top-right point will have the smallest difference.
+    rect[1] = pts[np.argmin(diff)]
+    # Bottom-left will have the largest difference.
+    rect[3] = pts[np.argmax(diff)]
+    # return the ordered coordinates
+    return rect.astype('int')
+
+def find_dest(pts):
+    (tl, tr, br, bl) = pts
+    # Finding the maximum width.
+    widthA = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
+    widthB = np.sqrt(((tr[0] - tl[0]) ** 2) + ((tr[1] - tl[1]) ** 2))
+    maxWidth = max(int(widthA), int(widthB))
+ 
+    # Finding the maximum height.
+    heightA = np.sqrt(((tr[0] - br[0]) ** 2) + ((tr[1] - br[1]) ** 2))
+    heightB = np.sqrt(((tl[0] - bl[0]) ** 2) + ((tl[1] - bl[1]) ** 2))
+    maxHeight = max(int(heightA), int(heightB))
+    # Final destination co-ordinates.
+    destination_corners = [[0, 0], [maxWidth, 0], [maxWidth, maxHeight], [0, maxHeight]]
+ 
+    return order_points(destination_corners)
+## [functions for homomorphy]
+
 def set_parking_limits(camera_device):
     global low_H
     global high_H
@@ -130,12 +169,15 @@ def set_parking_limits(camera_device):
         mask = cv.erode(frame_threshold, kernel)
         ## [Mathematical morphology erosion]
 
-        #[Contours detection]
+        ## [Contours detection and homography]
         contours, _ = cv.findContours(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
         cnt = max(contours, key=cv.contourArea)
         x, y, w, h = cv.boundingRect(cnt)
         cv.rectangle(frame,(x, y),(x + w, y + h),(0, 255, 0), 2)
-        #[Contours detection]
+
+        corners = order_points(cnt)
+        destination_corners = find_dest(corners)
+        ## [Contours detection and homography]
 
         ## [show]
         concat = np.concatenate((frame, cv.cvtColor(frame_threshold, cv.COLOR_GRAY2BGR), cv.cvtColor(mask, cv.COLOR_GRAY2BGR)), axis=0)
@@ -147,7 +189,7 @@ def set_parking_limits(camera_device):
             break
 
     cv.destroyWindow(window_detection_name)
-    return x, y, w, h
+    return corners, destination_corners
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Code for parking segmentation using inRange.')
