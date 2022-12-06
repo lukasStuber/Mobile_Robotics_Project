@@ -44,7 +44,7 @@ class Kalman:
         # radius of the wheels [mm]
         self.radius = 22
     
-    def set_state(x0, P0):
+    def set_state(self, x0, P0):
         # initial state
         self.x = x0
         # initial state covariance
@@ -59,7 +59,7 @@ class Kalman:
         self.last_t_correct = current_t
 
     def state_prop(self, u, current_t):
-        calc_dt_prop(current_t)
+        self.calc_dt_prop(current_t)
         v_l = u[0]*self.radius
         v_r = u[1]*self.radius
         speed_t = (v_l + v_r)/2           # distance speed
@@ -77,13 +77,18 @@ class Kalman:
         A = np.array([[1, 0, -self.dt_prop*speed_t*sin - 0.5*self.dt_prop^2*speed_t*speed_r*cos],
                       [0, 1,  self.dt_prop*speed_t*cos - 0.5*self.dt_prop^2*speed_t*speed_r*sin],
                       [0, 0, 1]])
+
+        # input transition matrix
+        L = np.array([[self.dt_correct*v_l/2*cos - ((self.dt_correct^2)/(2*self.base))*v_l^2*sin, -self.dt_correct*v_r/2*cos + ((self.dt_correct^2)/(2*self.base))*v_r^2*sin],
+                      [self.dt_correct*v_l/2*cos + ((self.dt_correct^2)/(2*self.base))*v_l^2*cos, -self.dt_correct*v_l/2*sin - ((self.dt_correct^2)/(2*self.base))*v_l^2*cos],
+                      [self.dt_correct*v_l/self.base, -self.dt_correct*v_r/self.base]])
                       
         # state covariance propagation
         self.P = A@self.P@A.T + L@self.Q@L.T
 
     
     def correct(self, u, z, current_t):
-        calc_dt_correct(current_t)
+        self.calc_dt_correct(current_t)
         v_l = u[0]*self.radius
         v_r = u[1]*self.radius
         speed_t = (v_l + v_r)/2           # distance speed
