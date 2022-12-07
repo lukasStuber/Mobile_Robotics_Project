@@ -30,7 +30,7 @@ def delete_outliers(data):
 def discretize_map(final_seg):
     map_arr = final_seg
     size_x, size_y, _ = map_arr.shape
-    kernel = 1
+    kernel = 3
 
     path_arr = np.zeros([size_x//(2*kernel+1), size_y//(2*kernel+1)], np.uint8)
     end_patch = []
@@ -87,7 +87,7 @@ def discretize_map(final_seg):
     blue_y = (min(start_patch_blue[:,1])+max(start_patch_blue[:,1]))//2
     blue = (blue_x, blue_y)
 
-    start = np.mean(blue, green)
+    start = ((blue_x+green_x)//2, (blue_y+green_y)//2)
 
     x,y = np.mgrid[0:path_x:1, 0:path_y:1]
     pos = np.empty(x.shape + (2,))
@@ -97,9 +97,12 @@ def discretize_map(final_seg):
     h = np.linalg.norm(pos - goal, axis=-1)
     h = dict(zip(coords, h))
 
+    print(start, goal)
+
     # Run A*
     path, visitedNodes = A_Star(start, goal, h, coords, path_arr, movement_type="8N", max_val=path_arr.shape)
     path = np.array(path).reshape(-1, 2)
+    print(path)
     path = path*(2*kernel + 1)
     # visitedNodes = np.array(visitedNodes).reshape(-1, 2)
     cmap = colors.ListedColormap(['white', 'red'])

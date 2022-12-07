@@ -32,7 +32,7 @@ thymio = ThymioControl(position=(0,0), angle=0, kalman=kalman)
 def compute_centroids():
     global centroids, theta_thymio, localization
     centroids, theta_thymio, localization = get_centroids(id_camera, corners, destination_corners, refined_color_dict_HSV, kernels, openings, prev_centroids=centroids, real_size=(NOMINAL_AREA_LENGTH, NOMINAL_AREA_WIDTH), real_time=False)
-    kalman.state_correct((centroids['thymio'][0], centroids['thymio'][1], theta_thymio))
+    #kalman.state_correct((centroids['thymio'][0], centroids['thymio'][1], theta_thymio))
     thymio.position = kalman.x[:2]
     thymio.angle = kalman.x[2]
 
