@@ -49,7 +49,7 @@ class Kalman:
         # state covariance propagation
         self.P = A@self.P@A.T + L@self.Q@L.T
     
-    def state_correct(self, u, z):
+    def state_correct(self, z):
         # kalman gain
         K = self.P@self.H.T@np.linalg.inv(self.H@self.P@self.H.T + self.R)
         # correct state and covariance

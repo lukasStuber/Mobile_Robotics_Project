@@ -22,9 +22,13 @@ cv.destroyWindow("Segmentation Result")
 ##[Thymio and objective localization]
 centroids = {'goal': (0, 0), 'thymio': (0, 0), 'green': (0, 0), 'blue': (0, 0)}
 
+# start kalman
+kalman = Kalman(NOISE_POS_XY, NOISE_POS_XY, NOISE_POS_THETA, NOISE_MEASURE_XY, NOISE_MEASURE_XY)
+
 def compute_centroids():
     global centroids, theta_thymio, localization
     centroids, theta_thymio, localization = get_centroids(id_camera, corners, destination_corners, refined_color_dict_HSV, kernels, openings, prev_centroids=centroids, orig_frame=(120, 80), real_time=False)
+    kalman.correct((centroids['thymio'][0], centroids['thymio'][0], theta_thymio))
 
 def plot_localization():
     global localization
@@ -38,9 +42,6 @@ timer_centroids.start()
 
 # pathfinding
 path = discretize_map(segmentation)
-
-# start kalman
-kalman = Kalman(NOISE_POS_XY, NOISE_POS_XY, NOISE_POS_THETA, NOISE_MEASURE_XY, NOISE_MEASURE_XY)
 
 # start path following
 thymio = ThymioControl(position=(0,0), angle=0, kalman=kalman)
