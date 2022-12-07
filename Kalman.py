@@ -9,9 +9,8 @@ from time import time
 
 class Kalman:
     def __init__(self, noisePosX, noisePosY, noiseTheta, noiseInputL, noiseInputR):
-        # timestep dt for state propagation
-        self.dt = 0
-        self.last_t_prop = 0
+        # timestep for state propagation
+        self.dt = None
         # state
         self.x = np.zeros(3) # state
         self.P = np.zeros((3,3)) # state covariance
@@ -29,31 +28,36 @@ class Kalman:
         self.P = P0 # initial state covariance
 
     def state_prop(self, u):
-        self.dt = time() - self.last_t_prop
-        self.last_t_prop = self.last_t_prop + self.dt
-        v_l, v_r = u*SPEED_TO_MMS # left and right wheel speeds [mm/s]
-        speed_t = (v_l + v_r)/2          # translation speed [mm/s]
-        speed_r = (v_r - v_l)/WHEEL_DIST # rotation speed [rad/s]
-        sin = np.sin(self.x[2]) # sin(theta)
-        cos = np.cos(self.x[2]) # cos(theta)
+        if self.dt is None: # initialisation
+            self.dt = time.time()
+            return
+        interval = time.time() - self.dt
+        self.dt = time.time()
+        # https://ocw.mit.edu/courses/6-186-mobile-autonomous-systems-laboratory-january-iap-2005/764fafce112bed6482c61f1593bd0977_odomtutorial.pdf
+        (dx, dy) = interval*SPEED_TO_MMS*u # left and right displacements [mm]
+        da = (dy - dx)/WHEEL_DIST # rotation angle [rad]
+        dc = (dx + dy)/2 # center displacement [mm]
+        (vx, vy) = u*SPEED_TO_MMS # left and right wheel speeds [mm/s]
+        vt = (vx + vy)/2 # translation speed [mm/s]
+        vr = (vy - vx)/WHEEL_DIST # rotation speed [rad/s]
+        sin = math.sin(self.x[2])
+        cos = math.cos(self.x[2])
         # state propagation
-        self.x[0] = self.x[0] + self.dt*speed_t*cos - 0.5*self.dt**2*speed_t*speed_r*sin
-        self.x[1] = self.x[1] + self.dt*speed_t*sin + 0.5*self.dt**2*speed_t*speed_r*cos
-        self.x[2] = self.x[2] + self.dt*speed_r
+        self.x[0] = self.x[0] + dc*cos
+        self.x[1] = self.x[1] + dc*sin
+        self.x[2] = (self.x[2] + da) % (2*math.pi)
         # transition function (state propagation matrix)
-        A = np.array([[1, 0, -self.dt*speed_t*sin - 0.5*self.dt**2*speed_t*speed_r*cos],
-                      [0, 1,  self.dt*speed_t*cos - 0.5*self.dt**2*speed_t*speed_r*sin],
+        A = np.array([[1, 0, -self.dt*vt*sin - 0.5*self.dt**2*vt*vr*cos],
+                      [0, 1,  self.dt*vt*cos - 0.5*self.dt**2*vt*vr*sin],
                       [0, 0, 1]])
         # input transition matrix
-        L = np.array([[self.dt*v_l/2*cos - ((self.dt**2)/(2*WHEEL_DIST))*v_l**2*sin, -self.dt*v_r/2*cos + ((self.dt**2)/(2*WHEEL_DIST))*v_r**2*sin],
-                      [self.dt*v_l/2*cos + ((self.dt**2)/(2*WHEEL_DIST))*v_l**2*cos, -self.dt*v_l/2*sin - ((self.dt**2)/(2*WHEEL_DIST))*v_l**2*cos],
-                      [self.dt*v_l/WHEEL_DIST, -self.dt*v_r/WHEEL_DIST]])           
+        L = np.array([[self.dt*vx/2*cos - ((self.dt**2)/(2*WHEEL_DIST))*vx**2*sin, -self.dt*vy/2*cos + ((self.dt**2)/(2*WHEEL_DIST))*vy**2*sin],
+                      [self.dt*vx/2*cos + ((self.dt**2)/(2*WHEEL_DIST))*vx**2*cos, -self.dt*vx/2*sin - ((self.dt**2)/(2*WHEEL_DIST))*vx**2*cos],
+                      [self.dt*vx/WHEEL_DIST, -self.dt*vy/WHEEL_DIST]])           
         # state covariance propagation
         self.P = A@self.P@A.T + L@self.Q@L.T
     
     def state_correct(self, z):
-        # kalman gain
-        K = self.P@self.H.T@np.linalg.inv(self.H@self.P@self.H.T + self.R)
-        # correct state and covariance
-        self.x = self.x + K@(z - self.H@self.x) 
-        self.P = (np.eye(3) - K@self.H)@self.P
+        K = self.P@self.H.T@np.linalg.inv(self.H@self.P@self.H.T + self.R) # kalman gain
+        self.x = self.x + K@(z - self.H@self.x) # state
+        self.P = (np.eye(3) - K@self.H)@self.P # state covariance
