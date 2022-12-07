@@ -14,11 +14,11 @@ def rescale_frame(frame, scale_percent=20):
 ## [convert indices to mm]
 def indices_to_mm(real_size, cropped_frame, centroid, reverse=False):
     L, H = real_size
-    l, h = cropped_frame.shape[:2]
+    h, l = cropped_frame.shape[:2]
     x, y = centroid
     if reverse:
-        return (int(H*x/h), int(L*y/l))
-    return (int(h*x/H), int(l*y/L))
+        return (int(h*x/H), int(l*y/L))
+    return (int(H*x/h), int(L*y/l))
 ## [convert indices to mm]
 
 def get_centroids(camera_device, corners, destination_corners, HSV_preset, kernel_preset, opening_preset, prev_centroids=None, real_size=(1600, 820), real_time=False):

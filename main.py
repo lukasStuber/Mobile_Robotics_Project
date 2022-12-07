@@ -46,6 +46,5 @@ timer_centroids.start()
 
 # pathfinding
 path = discretize_map(segmentation)
-thymio.set_coordinates(centroids['thymio'], theta_thymio)
 thymio.set_path(path)
 thymio.follow_path()
