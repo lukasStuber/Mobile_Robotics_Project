@@ -27,7 +27,7 @@ class ThymioControl:
     # timers
         self.stop_timer = Timer(0, self.stop)
         self.move_timer = RepeatedTimer(MOVE_INTERVAL, self.navigation)
-        # self.odometry_timer = RepeatedTimer(ODOMETRY_INTERVAL, self.estimate_position)
+        self.odometry_timer = RepeatedTimer(ODOMETRY_INTERVAL, self.estimate_position)
 
 # MOVEMENT
     def move(self, l_speed, r_speed=None):
@@ -51,7 +51,7 @@ class ThymioControl:
         else: self.move_to_goal()
 
     def follow_path(self):
-        # self.odometry_timer.start()
+        self.odometry_timer.start()
         self.move_timer.start()
 
 # PATH FOLLOWING
@@ -121,8 +121,8 @@ class ThymioControl:
         # self.position = (self.position[0] + dc*math.cos(self.angle), self.position[1] + dc*math.sin(self.angle))
         # self.angle = (self.angle + da) % (2*math.pi)
         self.kalman.state_prop(self.speed_target)
-        self.position = self.kalman.state[0:2]
-        self.angle = self.kalman.state[2]
+        self.position = self.kalman.x[0:2]
+        self.angle = self.kalman.x[2]
         print(self.position, self.angle*180/math.pi)
 
 # OTHER
@@ -149,3 +149,10 @@ onevent button.center
             await self.node.compile(program)
             await self.node.run()
         self.client.run_async_program(prog)
+
+if __name__ == '__main__':
+    from Kalman import Kalman
+    kalman = Kalman(NOISE_POS_XY, NOISE_POS_XY, NOISE_POS_THETA, NOISE_MEASURE_XY, NOISE_MEASURE_XY)
+    thymio = ThymioControl(position=(0,0), angle=0, kalman=kalman)
+    thymio.set_path([(0,0), (1000,0), (1000,1000), (0,1000), (0,0)])
+    thymio.follow_path()

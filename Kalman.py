@@ -5,12 +5,13 @@
 
 import numpy as np
 from constants import *
-from time import time
+import time
 
 class Kalman:
     def __init__(self, noisePosX, noisePosY, noiseTheta, noiseInputL, noiseInputR):
         # timestep for state propagation
         self.dt = None
+        self.prev_time = None
         # state
         self.x = np.zeros(3) # state
         self.P = 1000*np.ones(3) # state covariance
@@ -33,10 +34,10 @@ class Kalman:
         self.dt = time.time() - self.prev_time
         self.prev_time = time.time()
         # https://ocw.mit.edu/courses/6-186-mobile-autonomous-systems-laboratory-january-iap-2005/764fafce112bed6482c61f1593bd0977_odomtutorial.pdf
-        (dx, dy) = self.dt*SPEED_TO_MMS*u # left and right displacements [mm]
+        (dx, dy) = self.dt*SPEED_TO_MMS*np.array(u) # left and right displacements [mm]
         da = (dy - dx)/WHEEL_DIST # rotation angle [rad]
         dc = (dx + dy)/2 # center displacement [mm]
-        (vx, vy) = u*SPEED_TO_MMS # left and right wheel speeds [mm/s]
+        (vx, vy) = SPEED_TO_MMS*np.array(u) # left and right wheel speeds [mm/s]
         vt = (vx + vy)/2 # translation speed [mm/s]
         vr = (vy - vx)/WHEEL_DIST # rotation speed [rad/s]
         sin = math.sin(self.x[2])
