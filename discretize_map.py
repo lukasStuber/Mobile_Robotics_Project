@@ -34,7 +34,8 @@ def discretize_map(final_seg):
 
     path_arr = np.zeros([size_x//(2*kernel+1), size_y//(2*kernel+1)], np.uint8)
     end_patch = []
-    start_patch = []
+    start_patch_green = []
+    start_patch_blue = []
 
     for x in np.arange(kernel, size_x-kernel, 2*kernel+1):
         for y in np.arange(kernel, size_y-kernel, 2*kernel+1):
@@ -56,10 +57,11 @@ def discretize_map(final_seg):
                 path_arr[path_pixel] = 1
             # check for blue
             elif ((not check_patch(red_patch)) and (not check_patch(green_patch)) and (check_patch(blue_patch))):
-                path_arr[path_pixel] = 1
+                start_patch_blue.append(list(path_pixel))
+                path_arr[path_pixel] = 0
             # check for green
             elif ((not check_patch(red_patch)) and (check_patch(green_patch)) and (not check_patch(blue_patch))):
-                start_patch.append(list(path_pixel))
+                start_patch_green.append(list(path_pixel))
                 path_arr[path_pixel] = 0
             # free space
             else: path_arr[path_pixel] = 0
@@ -73,11 +75,19 @@ def discretize_map(final_seg):
     goal_y = (min(end_patch[:,1])+max(end_patch[:,1]))//2
     goal = (goal_x, goal_y)
 
-    start_patch = np.array(start_patch)
-    start_patch = np.array(delete_outliers(start_patch))
-    start_x = (min(start_patch[:,0])+max(start_patch[:,0]))//2
-    start_y = (min(start_patch[:,1])+max(start_patch[:,1]))//2
-    start = (start_x, start_y)
+    start_patch_green = np.array(start_patch_green)
+    start_patch_green = np.array(delete_outliers(start_patch_green))
+    green_x = (min(start_patch_green[:,0])+max(start_patch_green[:,0]))//2
+    green_y = (min(start_patch_green[:,1])+max(start_patch_green[:,1]))//2
+    green = (green_x, green_y)
+    
+    start_patch_blue = np.array(start_patch_blue)
+    start_patch_blue = np.array(delete_outliers(start_patch_blue))
+    blue_x = (min(start_patch_blue[:,0])+max(start_patch_blue[:,0]))//2
+    blue_y = (min(start_patch_blue[:,1])+max(start_patch_blue[:,1]))//2
+    blue = (blue_x, blue_y)
+
+    start = np.mean(blue, green)
 
     x,y = np.mgrid[0:path_x:1, 0:path_y:1]
     pos = np.empty(x.shape + (2,))
