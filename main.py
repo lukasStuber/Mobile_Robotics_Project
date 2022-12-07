@@ -26,6 +26,8 @@ key = cv.waitKey(0)
 cv.destroyWindow("Segmentation Result")
 ##[Thymio and objective localization]
 centroids = {'goal': (0, 0), 'thymio': (0, 0), 'green': (0, 0), 'blue': (0, 0)}
+theta_thymio = 0
+localization = None
 
 def compute_centroids():
     global centroids, theta_thymio, localization
