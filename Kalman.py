@@ -31,10 +31,9 @@ class Kalman:
     def state_prop(self, u):
         self.dt = time() - self.last_t_prop
         self.last_t_prop = self.last_t_prop + self.dt
-        v_l = u[0]*WHEEL_RADIUS
-        v_r = u[1]*WHEEL_RADIUS
-        speed_t = (v_l + v_r)/2          # translation speed
-        speed_r = (v_l - v_r)/WHEEL_DIST # rotation speed
+        v_l, v_r = u*SPEED_TO_MMS # left and right wheel speeds [mm/s]
+        speed_t = (v_l + v_r)/2          # translation speed [mm/s]
+        speed_r = (v_r - v_l)/WHEEL_DIST # rotation speed [rad/s]
         sin = np.sin(self.x[2]) # sin(theta)
         cos = np.cos(self.x[2]) # cos(theta)
         # state propagation
