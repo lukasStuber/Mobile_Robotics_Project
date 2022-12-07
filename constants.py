@@ -24,8 +24,8 @@ OBST_TIME = 1
 
 WHEEL_RADIUS = 22   #[mm]
 
-NOMINAL_AREA_LENGTH = 1600  # [mm]
-NOMINAL_AREA_WIDTH = 840    # [mm]
+NOMINAL_AREA_LENGTH = 1475  # [mm]
+NOMINAL_AREA_WIDTH = 730    # [mm]
 
 NOISE_POS_XY = 0.64         # [mm2]
 NOISE_POS_THETA = 1         # [rad^2]

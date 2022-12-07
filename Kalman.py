@@ -89,19 +89,19 @@ class Kalman:
 
     
     def correct(self, u, z, current_t):
-        self.calc_dt_correct(current_t)
-        v_l = u[0]*self.radius
-        v_r = u[1]*self.radius
-        speed_t = (v_l + v_r)/2           # distance speed
-        speed_r = (v_l - v_r)/self.base   # rotational speed
+        #self.calc_dt_correct(current_t)
+        #v_l = u[0]*self.radius
+        #v_r = u[1]*self.radius
+        #speed_t = (v_l + v_r)/2           # distance speed
+        #speed_r = (v_l - v_r)/self.base   # rotational speed
         
-        sin = np.sin(self.x[2])
-        cos = np.cos(self.x[2])
+        #sin = np.sin(self.x[2])
+        #cos = np.cos(self.x[2])
 
         # transition function (state propagation matrix)
-        A = np.array([[1, 0, -self.dt_correct*speed_t*sin - 0.5*self.dt_correct^2*speed_t*speed_r*cos],
-                      [0, 1,  self.dt_correct*speed_t*cos - 0.5*self.dt_correct^2*speed_t*speed_r*sin],
-                      [0, 0, 1]])
+        #A = np.array([[1, 0, -self.dt_correct*speed_t*sin - 0.5*self.dt_correct^2*speed_t*speed_r*cos],
+        #              [0, 1,  self.dt_correct*speed_t*cos - 0.5*self.dt_correct^2*speed_t*speed_r*sin],
+        #              [0, 0, 1]])
         
         # input transition matrix
         #L = np.array([[self.dt_correct*v_l/2*cos - ((self.dt_correct^2)/(2*self.base))*v_l^2*sin, -self.dt_correct*v_r/2*cos + ((self.dt_correct^2)/(2*self.base))*v_r^2*sin],
