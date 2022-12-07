@@ -6,7 +6,8 @@ from RepeatedTimer import RepeatedTimer
 from constants import *
 
 class ThymioControl:
-    def __init__(self, position=(0,0), angle=0):
+    def __init__(self, position=(0,0), angle=0, kalman=None):
+        self.kalman = kalman
         self.client = ClientAsync()
         self.node = aw(self.client.wait_for_node())
         aw(self.node.lock())
@@ -118,6 +119,7 @@ class ThymioControl:
         dc = (dx + dy)/2
         self.position = (self.position[0] + dc*math.cos(self.angle), self.position[1] + dc*math.sin(self.angle))
         self.angle = (self.angle + da) % (2*math.pi)
+        self.kalman.state_prop(self.speed_target, interval)
         print(self.position, self.angle*180/math.pi)
 
     def get_estimate(self):

@@ -105,7 +105,7 @@ def rescale_frame(frame, scale_percent=20):
     return cv.resize(frame, dsize)
 ## [rescale frame to speed up computation]
 
-def get_color_mask(camera_device, corners, destination_corners, HSV_preset=color_dict_HSV, kernel_preset=None, opening_preset=None):
+def get_color_mask(camera_device, corners, destination_corners, real_size=(1600, 820), HSV_preset=color_dict_HSV, kernel_preset=None, opening_preset=None):
     global low_H
     global high_H
     global low_S
@@ -155,7 +155,7 @@ def get_color_mask(camera_device, corners, destination_corners, HSV_preset=color
                 break
 
             ## [rescaling and homomorphy]
-            scale_percent = 20
+            scale_percent = 50
             frame = rescale_frame(frame, scale_percent)
             M = cv.getPerspectiveTransform(np.float32(corners), np.float32(destination_corners))
             cropped_frame = cv.warpPerspective(frame, M, (destination_corners[2][0], destination_corners[2][1]), flags=cv.INTER_LINEAR)
@@ -177,8 +177,8 @@ def get_color_mask(camera_device, corners, destination_corners, HSV_preset=color
                 color_mask = cv.erode(color_mask, kernel)
 
             ## [Enlarge obstacles]
-            if color == "yellow":
-                color_mask = cv.dilate(color_mask, np.ones((30, 30), np.uint8))
+            #if color == "yellow":
+            #    color_mask = cv.dilate(color_mask, np.ones((30, 30), np.uint8))
             ## [Enlarge obstacles]
 
             color_masks[color] = color_mask
@@ -209,6 +209,7 @@ def get_color_mask(camera_device, corners, destination_corners, HSV_preset=color
                 break
 
         cv.destroyWindow(window_detection_name + color)
+        segmentation = cv.resize(segmentation, real_size)
     return  segmentation, refined_color_dict_HSV, refined_kernel, refined_opening
 
 if __name__ == '__main__':
