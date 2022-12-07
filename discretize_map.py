@@ -95,7 +95,7 @@ def discretize_map(final_seg):
     cmap = colors.ListedColormap(['white', 'red'])
     fig_astar, ax_astar = create_empty_plot((path_y, path_x))
     ax_astar.imshow(path_arr, cmap=cmap)
-    ax_astar.scatter(visitedNodes[:,1], visitedNodes[:,0], marker="o", color = 'orange')
+    # ax_astar.scatter(visitedNodes[:,1], visitedNodes[:,0], marker="o", color = 'orange')
     ax_astar.plot(path[:,1], path[:,0], marker="o", color = 'blue')
     ax_astar.scatter(start[1], start[0], marker="o", color = 'green', s=200)
     ax_astar.scatter(goal[1], goal[0], marker="o", color = 'purple', s=200)
