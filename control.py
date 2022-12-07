@@ -30,10 +30,6 @@ class ThymioControl:
         self.odometry_timer = RepeatedTimer(ODOMETRY_INTERVAL, self.estimate_position)
 
 # MOVEMENT
-    def set_coordinates(self, position, angle):
-        self.position = position
-        self.angle = angle
-
     def move(self, l_speed, r_speed=None):
         if r_speed is None: r_speed = l_speed
         aw(self.node.set_variables({"motor.left.target": [int(l_speed)],"motor.right.target": [int(r_speed)]}))
@@ -127,13 +123,7 @@ class ThymioControl:
         self.kalman.state_prop(self.speed_target)
         print(self.position, self.angle*180/math.pi)
 
-    def get_estimate(self):
-        return (self.position[0]*0.001, self.position[1]*0.001, self.angle) # in meters for kalman filter
-    
-    def get_speed(self):
-        return SPEED_TO_MMS*self.speed_target # in mm/s for kalman filter
-
-# OTHER :)))
+# OTHER
     def crab_rave(self):
         program = '''
 var note[19] = [2349, 1976, 1568, 1568, 2349, 2349, 1760, 1397, 1397, 2349, 2349, 1760, 1397, 1397, 2094, 2094, 1319, 1319, 1397]

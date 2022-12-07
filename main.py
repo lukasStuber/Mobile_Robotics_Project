@@ -29,8 +29,10 @@ centroids = {'goal': (0, 0), 'thymio': (0, 0), 'green': (0, 0), 'blue': (0, 0)}
 
 def compute_centroids():
     global centroids, theta_thymio, localization
-    centroids, theta_thymio, localization = get_centroids(id_camera, corners, destination_corners, refined_color_dict_HSV, kernels, openings, prev_centroids=centroids, real_size=(1600, 820), real_time=False)
-    kalman.correct((centroids['thymio'][0], centroids['thymio'][1], theta_thymio))
+    centroids, theta_thymio, localization = get_centroids(id_camera, corners, destination_corners, refined_color_dict_HSV, kernels, openings, prev_centroids=centroids, orig_frame=(120, 80), real_time=False)
+    kalman.state_correct((centroids['thymio'][0], centroids['thymio'][1], theta_thymio))
+    thymio.position = kalman.x[:2]
+    thymio.angle = kalman.x[2]
 
 def plot_localization():
     global localization
