@@ -13,7 +13,7 @@ class Kalman:
         self.dt = None
         # state
         self.x = np.zeros(3) # state
-        self.P = np.zeros((3,3)) # state covariance
+        self.P = 1000*np.ones(3) # state covariance
         # process noise
         self.R = np.diag([noisePosX, noisePosY, noiseTheta**2/6])
         # measurement noise
@@ -23,9 +23,8 @@ class Kalman:
                            [0, 1, 0],
                            [0, 0, 1]])
     
-    def set_state(self, x0, P0):
+    def set_state(self, x0):
         self.x = x0 # initial state
-        self.P = P0 # initial state covariance
 
     def state_prop(self, u):
         if self.prev_time is None: # initialisation
