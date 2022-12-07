@@ -12,8 +12,8 @@ def rescale_frame(frame, scale_percent=20):
 ## [rescale frame to speed up computation]
 
 ## [convert indices to mm]
-def indices_to_mm(orig_frame, cropped_frame, centroid, reverse=False):
-    L, H = orig_frame
+def indices_to_mm(real_size, cropped_frame, centroid, reverse=False):
+    L, H = real_size
     l, h = cropped_frame.shape[:2]
     x, y = centroid
     if reverse:
@@ -21,7 +21,7 @@ def indices_to_mm(orig_frame, cropped_frame, centroid, reverse=False):
     return (int(h*x/H), int(l*y/L))
 ## [convert indices to mm]
 
-def get_centroids(camera_device, corners, destination_corners, HSV_preset, kernel_preset, opening_preset, prev_centroids=None, orig_frame=(120, 80), real_time=False):
+def get_centroids(camera_device, corners, destination_corners, HSV_preset, kernel_preset, opening_preset, prev_centroids=None, real_size=(1600, 820), real_time=False):
     color_masks = dict()
     window_name = "Thymio Localization"
 
@@ -40,7 +40,7 @@ def get_centroids(camera_device, corners, destination_corners, HSV_preset, kerne
         _, frame = cap.read()
 
         ## [rescaling and homomorphy]
-        scale_percent = 20
+        scale_percent = 50
         frame = rescale_frame(frame, scale_percent)
         M = cv.getPerspectiveTransform(np.float32(corners), np.float32(destination_corners))
         cropped_frame = cv.warpPerspective(frame, M, (destination_corners[2][0], destination_corners[2][1]), flags=cv.INTER_LINEAR)
@@ -73,10 +73,10 @@ def get_centroids(camera_device, corners, destination_corners, HSV_preset, kerne
                 x_green, y_green = 0, 0
                 x_blue, y_blue = 0, 0
             else:
-                x_goal_prev, y_goal_prev = indices_to_mm(orig_frame, cropped_frame, prev_centroids['goal'], reverse=True)
-                x_thymio_prev, y_thymio_prev = indices_to_mm(orig_frame, cropped_frame, prev_centroids['thymio'], reverse=True)
-                x_green, y_green = indices_to_mm(orig_frame, cropped_frame, prev_centroids['green'], reverse=True)
-                x_blue, y_blue = indices_to_mm(orig_frame, cropped_frame, prev_centroids['blue'], reverse=True)
+                x_goal_prev, y_goal_prev = indices_to_mm(real_size, cropped_frame, prev_centroids['goal'], reverse=True)
+                x_thymio_prev, y_thymio_prev = indices_to_mm(real_size, cropped_frame, prev_centroids['thymio'], reverse=True)
+                x_green, y_green = indices_to_mm(real_size, cropped_frame, prev_centroids['green'], reverse=True)
+                x_blue, y_blue = indices_to_mm(real_size, cropped_frame, prev_centroids['blue'], reverse=True)
             loaded_prev = True
         ## [Use previous centroids to initialize only once]
 
@@ -106,10 +106,10 @@ def get_centroids(camera_device, corners, destination_corners, HSV_preset, kerne
         cv.arrowedLine(cropped_frame, (x_thymio, y_thymio), ((x_arrow , y_arrow)), (255, 255, 255), 2)
 
         ## [convert indices to mm]
-        x_goal, y_goal = indices_to_mm(orig_frame, cropped_frame, (x_goal, y_goal))
-        x_thymio, y_thymio = indices_to_mm(orig_frame, cropped_frame, (x_thymio, y_thymio))
-        x_green, y_green = indices_to_mm(orig_frame, cropped_frame, (x_green, y_green))
-        x_blue, y_blue = indices_to_mm(orig_frame, cropped_frame, (x_blue, y_blue))
+        x_goal, y_goal = indices_to_mm(real_size, cropped_frame, (x_goal, y_goal))
+        x_thymio, y_thymio = indices_to_mm(real_size, cropped_frame, (x_thymio, y_thymio))
+        x_green, y_green = indices_to_mm(real_size, cropped_frame, (x_green, y_green))
+        x_blue, y_blue = indices_to_mm(real_size, cropped_frame, (x_blue, y_blue))
         ## [convert indices to mm]
 
         centroids = {'goal' : (x_goal, y_goal), 'thymio': (x_thymio, y_thymio), 'green': (x_green, y_green), 'blue': (x_blue, y_blue)}

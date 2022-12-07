@@ -155,7 +155,7 @@ def set_parking_limits(camera_device):
             break
 
         ## [rescaling]
-        scale_percent = 20
+        scale_percent = 50
         frame = rescale_frame(frame, scale_percent)
         ## [rescaling]
 
