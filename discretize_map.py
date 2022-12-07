@@ -30,7 +30,7 @@ def delete_outliers(data):
 def discretize_map(final_seg):
     map_arr = final_seg
     size_x, size_y, _ = map_arr.shape
-    kernel = 3
+    kernel = 6
 
     path_arr = np.zeros([size_x//(2*kernel+1), size_y//(2*kernel+1)], np.uint8)
     end_patch = []
@@ -39,32 +39,32 @@ def discretize_map(final_seg):
 
     for x in np.arange(kernel, size_x-kernel, 2*kernel+1):
         for y in np.arange(kernel, size_y-kernel, 2*kernel+1):
-            path_pixel = (x//(2*kernel+1), y//(2*kernel+1))
-            #path_pixel = (x,y)
+            patch = (x//(2*kernel+1), y//(2*kernel+1))
+
             red_patch =   map_arr[x-kernel:x+kernel+1, y-kernel:y+kernel+1, 0]
             green_patch = map_arr[x-kernel:x+kernel+1, y-kernel:y+kernel+1, 1]
             blue_patch =  map_arr[x-kernel:x+kernel+1, y-kernel:y+kernel+1, 2]
 
             # check for red
-            if   (check_patch(red_patch) and (not check_patch(green_patch)) and (not check_patch(blue_patch))):
-                end_patch.append(list(path_pixel))
-                path_arr[path_pixel] = 0
+            if   (not check_patch(red_patch) and (not check_patch(green_patch)) and (check_patch(blue_patch))):
+                end_patch.append(list(patch))
+                path_arr[patch] = 0
             # check for yellow
-            elif (check_patch(red_patch) and (check_patch(green_patch)) and (not check_patch(blue_patch))):
-                path_arr[path_pixel] = 1
+            elif (not check_patch(red_patch) and (check_patch(green_patch)) and (check_patch(blue_patch))):
+                path_arr[patch] = 1
             # check for white
             elif (check_patch(red_patch) and (check_patch(green_patch)) and (check_patch(blue_patch))):
-                path_arr[path_pixel] = 1
+                path_arr[patch] = 1
             # check for blue
-            elif ((not check_patch(red_patch)) and (not check_patch(green_patch)) and (check_patch(blue_patch))):
-                start_patch_blue.append(list(path_pixel))
-                path_arr[path_pixel] = 0
+            elif ((check_patch(red_patch)) and (not check_patch(green_patch)) and (not check_patch(blue_patch))):
+                start_patch_blue.append(list(patch))
+                path_arr[patch] = 0
             # check for green
             elif ((not check_patch(red_patch)) and (check_patch(green_patch)) and (not check_patch(blue_patch))):
-                start_patch_green.append(list(path_pixel))
-                path_arr[path_pixel] = 0
+                start_patch_green.append(list(patch))
+                path_arr[patch] = 0
             # free space
-            else: path_arr[path_pixel] = 0
+            else: path_arr[patch] = 0
 
     path_x, path_y = path_arr.shape
 
@@ -79,13 +79,11 @@ def discretize_map(final_seg):
     start_patch_green = np.array(delete_outliers(start_patch_green))
     green_x = (min(start_patch_green[:,0])+max(start_patch_green[:,0]))//2
     green_y = (min(start_patch_green[:,1])+max(start_patch_green[:,1]))//2
-    green = (green_x, green_y)
     
     start_patch_blue = np.array(start_patch_blue)
     start_patch_blue = np.array(delete_outliers(start_patch_blue))
     blue_x = (min(start_patch_blue[:,0])+max(start_patch_blue[:,0]))//2
     blue_y = (min(start_patch_blue[:,1])+max(start_patch_blue[:,1]))//2
-    blue = (blue_x, blue_y)
 
     start = ((blue_x+green_x)//2, (blue_y+green_y)//2)
 
@@ -102,15 +100,14 @@ def discretize_map(final_seg):
     # Run A*
     path, visitedNodes = A_Star(start, goal, h, coords, path_arr, movement_type="8N", max_val=path_arr.shape)
     path = np.array(path).reshape(-1, 2)
-    print(path)
     path = path*(2*kernel + 1)
     # visitedNodes = np.array(visitedNodes).reshape(-1, 2)
     cmap = colors.ListedColormap(['white', 'red'])
     fig_astar, ax_astar = create_empty_plot((path_y, path_x))
     ax_astar.imshow(path_arr, cmap=cmap)
-    # ax_astar.scatter(visitedNodes[:,1], visitedNodes[:,0], marker="o", color = 'orange')
     ax_astar.plot(path[:,1], path[:,0], marker="o", color = 'blue')
     ax_astar.scatter(start[1], start[0], marker="o", color = 'green', s=200)
     ax_astar.scatter(goal[1], goal[0], marker="o", color = 'purple', s=200)
     plt.show()
+    path = path*(2*kernel + 1)
     return path
