@@ -41,10 +41,11 @@ def plot_localization():
     key = cv.waitKey(30)
     cv.destroyWindow("Localization Result")
 
-timer_centroids = RepeatedTimer(1.5, compute_centroids)
-timer_centroids.start()
-
-# pathfinding
+# initialise position and path
+kalman.set_state((centroids['thymio'][0], centroids['thymio'][1], theta_thymio))
 path = discretize_map(segmentation)
 thymio.set_path(path)
+# start updating position and following path
+timer_centroids = RepeatedTimer(1.5, compute_centroids)
+timer_centroids.start()
 thymio.follow_path()
