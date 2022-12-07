@@ -9,11 +9,6 @@ from Kalman import Kalman
 from constants import *
 from RepeatedTimer import RepeatedTimer
 
-# start kalman
-kalman = Kalman(NOISE_POS_XY, NOISE_POS_XY, NOISE_POS_THETA, NOISE_MEASURE_XY, NOISE_MEASURE_XY)
-# start path following
-thymio = ThymioControl(position=(0,0), angle=0, kalman=kalman)
-
 # IMAGE PROCESSING
 id_camera = 1
 ##[Parking segmentation]
@@ -28,6 +23,11 @@ cv.destroyWindow("Segmentation Result")
 centroids = {'goal': (0, 0), 'thymio': (0, 0), 'green': (0, 0), 'blue': (0, 0)}
 theta_thymio = 0
 localization = None
+
+# start kalman
+kalman = Kalman(NOISE_POS_XY, NOISE_POS_XY, NOISE_POS_THETA, NOISE_MEASURE_XY, NOISE_MEASURE_XY)
+# start path following
+thymio = ThymioControl(position=(0,0), angle=0, kalman=kalman)
 
 def compute_centroids():
     global centroids, theta_thymio, localization
