@@ -28,13 +28,13 @@ class Kalman:
         self.P = P0 # initial state covariance
 
     def state_prop(self, u):
-        if self.dt is None: # initialisation
-            self.dt = time.time()
+        if self.prev_time is None: # initialisation
+            self.prev_time = time.time()
             return
-        interval = time.time() - self.dt
-        self.dt = time.time()
+        self.dt = time.time() - self.prev_time
+        self.prev_time = time.time()
         # https://ocw.mit.edu/courses/6-186-mobile-autonomous-systems-laboratory-january-iap-2005/764fafce112bed6482c61f1593bd0977_odomtutorial.pdf
-        (dx, dy) = interval*SPEED_TO_MMS*u # left and right displacements [mm]
+        (dx, dy) = self.dt*SPEED_TO_MMS*u # left and right displacements [mm]
         da = (dy - dx)/WHEEL_DIST # rotation angle [rad]
         dc = (dx + dy)/2 # center displacement [mm]
         (vx, vy) = u*SPEED_TO_MMS # left and right wheel speeds [mm/s]
