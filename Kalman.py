@@ -12,10 +12,13 @@ class Kalman:
         # timestep dt for state propagation
         self.dt = 0
         self.last_t_prop = 0
+        # state
+        self.x = np.zeros(3) # state
+        self.P = np.zeros((3,3)) # state covariance
         # process noise
-        self.R = np.diag([noisePosX, noisePosY, noiseTheta^2/6])
+        self.R = np.diag([noisePosX, noisePosY, noiseTheta**2/6])
         # measurement noise
-        self.Q = np.diag([noiseInputL^2/6, noiseInputR^2/6])
+        self.Q = np.diag([noiseInputL**2/6, noiseInputR**2/6])
         # Observation Matrix H
         self.H = np.array([[1, 0, 0],
                            [0, 1, 0],
@@ -35,21 +38,21 @@ class Kalman:
         sin = np.sin(self.x[2]) # sin(theta)
         cos = np.cos(self.x[2]) # cos(theta)
         # state propagation
-        self.x[0] = self.x[0] + self.dt*speed_t*cos - 0.5*self.dt^2*speed_t*speed_r*sin
-        self.x[1] = self.x[1] + self.dt*speed_t*sin + 0.5*self.dt^2*speed_t*speed_r*cos
+        self.x[0] = self.x[0] + self.dt*speed_t*cos - 0.5*self.dt**2*speed_t*speed_r*sin
+        self.x[1] = self.x[1] + self.dt*speed_t*sin + 0.5*self.dt**2*speed_t*speed_r*cos
         self.x[2] = self.x[2] + self.dt*speed_r
         # transition function (state propagation matrix)
-        A = np.array([[1, 0, -self.dt*speed_t*sin - 0.5*self.dt^2*speed_t*speed_r*cos],
-                      [0, 1,  self.dt*speed_t*cos - 0.5*self.dt^2*speed_t*speed_r*sin],
+        A = np.array([[1, 0, -self.dt*speed_t*sin - 0.5*self.dt**2*speed_t*speed_r*cos],
+                      [0, 1,  self.dt*speed_t*cos - 0.5*self.dt**2*speed_t*speed_r*sin],
                       [0, 0, 1]])
         # input transition matrix
-        L = np.array([[self.dt*v_l/2*cos - ((self.dt^2)/(2*WHEEL_DIST))*v_l^2*sin, -self.dt*v_r/2*cos + ((self.dt^2)/(2*WHEEL_DIST))*v_r^2*sin],
-                      [self.dt*v_l/2*cos + ((self.dt^2)/(2*WHEEL_DIST))*v_l^2*cos, -self.dt*v_l/2*sin - ((self.dt^2)/(2*WHEEL_DIST))*v_l^2*cos],
+        L = np.array([[self.dt*v_l/2*cos - ((self.dt**2)/(2*WHEEL_DIST))*v_l**2*sin, -self.dt*v_r/2*cos + ((self.dt**2)/(2*WHEEL_DIST))*v_r**2*sin],
+                      [self.dt*v_l/2*cos + ((self.dt**2)/(2*WHEEL_DIST))*v_l**2*cos, -self.dt*v_l/2*sin - ((self.dt**2)/(2*WHEEL_DIST))*v_l**2*cos],
                       [self.dt*v_l/WHEEL_DIST, -self.dt*v_r/WHEEL_DIST]])           
         # state covariance propagation
         self.P = A@self.P@A.T + L@self.Q@L.T
     
-    def state_correct(self, u, z):
+    def state_correct(self, z):
         # kalman gain
         K = self.P@self.H.T@np.linalg.inv(self.H@self.P@self.H.T + self.R)
         # correct state and covariance

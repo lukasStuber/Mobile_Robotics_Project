@@ -11,6 +11,7 @@ class ThymioControl:
         self.client = ClientAsync()
         self.node = aw(self.client.wait_for_node())
         aw(self.node.lock())
+        aw(self.node.set_variables({"leds.temperature": [int(0),int(0)]})) # "leds.circle": [0,0,0,0,0,0,0,0], "leds.rc": [0], 
         self.position = position
         self.angle = angle
     # path following
@@ -27,9 +28,12 @@ class ThymioControl:
         self.stop_timer = Timer(0, self.stop)
         self.move_timer = RepeatedTimer(MOVE_INTERVAL, self.navigation)
         self.odometry_timer = RepeatedTimer(ODOMETRY_INTERVAL, self.estimate_position)
-        self.odometry_timer.start()
 
 # MOVEMENT
+    def set_coordinates(self, position, angle):
+        self.position = position
+        self.angle = angle
+
     def move(self, l_speed, r_speed=None):
         if r_speed is None: r_speed = l_speed
         aw(self.node.set_variables({"motor.left.target": [int(l_speed)],"motor.right.target": [int(r_speed)]}))
@@ -51,6 +55,7 @@ class ThymioControl:
         else: self.move_to_goal()
 
     def follow_path(self):
+        self.odometry_timer.start()
         self.move_timer.start()
 
 # PATH FOLLOWING
