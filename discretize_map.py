@@ -92,10 +92,6 @@ def discretize_map(final_seg):
     path = np.array(path).reshape(-1, 2)
     path = path*(2*kernel + 1)
     # visitedNodes = np.array(visitedNodes).reshape(-1, 2)
-    return path
-
-'''
-def display_map(): # Display map
     cmap = colors.ListedColormap(['white', 'red'])
     fig_astar, ax_astar = create_empty_plot((path_y, path_x))
     ax_astar.imshow(path_arr, cmap=cmap)
@@ -104,4 +100,4 @@ def display_map(): # Display map
     ax_astar.scatter(start[1], start[0], marker="o", color = 'green', s=200)
     ax_astar.scatter(goal[1], goal[0], marker="o", color = 'purple', s=200)
     plt.show()
-'''
+    return path
