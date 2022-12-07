@@ -21,6 +21,7 @@ if __name__ == '__main__':
     cv.imshow("Segmentation Result", segmentation)
     key = cv.waitKey(0)
     cv.destroyWindow("Segmentation Result")
+    cv.imwrite("A* test.png", segmentation)
     ##[Color segmentation]
 
     ##[Thymio and objective localization]
@@ -28,8 +29,6 @@ if __name__ == '__main__':
     centroids = {'goal': (0, 0), 'thymio': (0, 0), 'green': (0, 0), 'blue': (0, 0)}
     while True:
         centroids, theta_thymio, localization = get_centroids(args.camera, corners, destination_corners, refined_color_dict_HSV, kernels, openings, prev_centroids=centroids, real_size=(1600, 820), real_time=False)
-        print("mm", centroids['thymio'], theta_thymio)
-        print(indices_to_mm((1600, 820), segmentation, centroids['thymio'], reverse=False))
         cv.imshow("Localization Result", localization)
         key = cv.waitKey(30)
     cv.destroyWindow("Localization Result")

@@ -46,7 +46,6 @@ def plot_localization():
 # initialise position and path
 kalman.set_state((centroids['thymio'][0], centroids['thymio'][1], theta_thymio))
 path = discretize_map(segmentation)
-print(path)
 thymio.set_path(path)
 # start updating position and following path
 timer_centroids = RepeatedTimer(1.5, compute_centroids)
