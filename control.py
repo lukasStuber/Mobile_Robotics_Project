@@ -119,7 +119,7 @@ class ThymioControl:
         dc = (dx + dy)/2
         self.position = (self.position[0] + dc*math.cos(self.angle), self.position[1] + dc*math.sin(self.angle))
         self.angle = (self.angle + da) % (2*math.pi)
-        self.kalman.state_prop(self.speed_target, interval)
+        self.kalman.state_prop(self.speed_target)
         print(self.position, self.angle*180/math.pi)
 
     def get_estimate(self):

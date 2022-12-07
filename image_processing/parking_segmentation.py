@@ -150,7 +150,7 @@ def set_parking_limits(camera_device):
     ## [trackbar]
 
     while True:
-        _, frame = cap.read()
+        success, frame = cap.read()
         if frame is None:
             break
 
