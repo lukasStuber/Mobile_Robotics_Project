@@ -177,8 +177,8 @@ def get_color_mask(camera_device, corners, destination_corners, real_size=(1600,
                 color_mask = cv.erode(color_mask, kernel)
 
             ## [Enlarge obstacles]
-            #if color == "yellow":
-            #    color_mask = cv.dilate(color_mask, np.ones((30, 30), np.uint8))
+            if color == "yellow":
+                color_mask = cv.dilate(color_mask, np.ones((30, 30), np.uint8))
             ## [Enlarge obstacles]
 
             color_masks[color] = color_mask

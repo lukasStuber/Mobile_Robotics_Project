@@ -10,7 +10,7 @@ from constants import *
 from RepeatedTimer import RepeatedTimer
 
 # IMAGE PROCESSING
-id_camera = 0
+id_camera = 1
 ##[Parking segmentation]
 corners, destination_corners = set_parking_limits(id_camera)
 ##[Color segmentation]
@@ -24,7 +24,7 @@ centroids = {'goal': (0, 0), 'thymio': (0, 0), 'green': (0, 0), 'blue': (0, 0)}
 
 def compute_centroids():
     global centroids, theta_thymio, localization
-    centroids, theta_thymio, localization = get_centroids(id_camera, corners, destination_corners, refined_color_dict_HSV, kernels, openings, prev_centroids=centroids, orig_frame=(120, 80), real_time=False)
+    centroids, theta_thymio, localization = get_centroids(id_camera, corners, destination_corners, refined_color_dict_HSV, kernels, openings, prev_centroids=centroids, real_size=(1600, 820), real_time=False)
 
 def plot_localization():
     global localization
