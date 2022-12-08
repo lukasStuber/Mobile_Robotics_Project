@@ -6,12 +6,12 @@ from RepeatedTimer import RepeatedTimer
 from constants import *
 
 class ThymioControl:
-    def __init__(self, position=(0,0), angle=0):
+    def __init__(self):
         self.client = ClientAsync()
         self.node = aw(self.client.wait_for_node())
         aw(self.node.lock())
-        self.position = position
-        self.angle = angle
+        self.position = [0,0]
+        self.angle = 0
         self.speed_target = (0,0)
     # path following
         self.stop_planned = False
@@ -86,7 +86,6 @@ class ThymioControl:
 # OBSTACLE AVOIDANCE
     def get_prox(self):
         aw(self.node.wait_for_variables({"prox.horizontal"}))
-        print(list(self.node.v.prox.horizontal))
         self.proxs = np.array(list(self.node.v.prox.horizontal))[:-2]
 
     def avoid_obstacles(self):
@@ -98,22 +97,6 @@ class ThymioControl:
            speed[0] += 100; speed[1] += 100
         self.obst_direction = 1 if speed[0] < speed[1] else -1 # turn left when obstacle on the left and vice versa
         self.move(speed[0], speed[1])
-
-# ODOMETRY
-    # def estimate_position(self):
-    #     if self.odometry_time is None: # initialisation
-    #         self.odometry_time = time.time()
-    #         return
-    #     interval = time.time() - self.odometry_time
-    #     self.odometry_time = time.time()
-    #     # # https://ocw.mit.edu/courses/6-186-mobile-autonomous-systems-laboratory-january-iap-2005/764fafce112bed6482c61f1593bd0977_odomtutorial.pdf
-    #     dx = interval*SPEED_TO_MMS*self.speed_target[0] # fetching the actual speed from the thymio is very slow (100ms) and inconsistent
-    #     dy = interval*SPEED_TO_MMS*self.speed_target[1] # odometry needs a high frequency to be accurate
-    #     da = -(dy - dx)/WHEEL_DIST # flip y direction to match the image processing output
-    #     dc = (dx + dy)/2
-    #     self.position = (self.position[0] + dc*math.cos(self.angle), self.position[1] + dc*math.sin(self.angle))
-    #     self.angle = (self.angle + da) % (2*math.pi)
-    #     print(self.position[0], self.position[1], self.angle*180/math.pi)
 
 # OTHER
     def keyboard(self):
