@@ -12,6 +12,7 @@ class ThymioControl:
         aw(self.node.lock())
         self.position = position
         self.angle = angle
+        self.speed_target = (0,0)
     # path following
         self.stop_planned = False
         self.path = [(0,0)]
@@ -19,9 +20,6 @@ class ThymioControl:
     # obstacle avoidance
         self.proxs = np.zeros(5)
         self.obst_direction = 0
-    # odometry
-        self.odometry_time = None
-        self.speed_target = (0,0)
     # timers
         self.stop_timer = Timer(0, self.stop)
         self.move_timer = RepeatedTimer(MOVE_INTERVAL, self.navigation)
@@ -48,7 +46,6 @@ class ThymioControl:
         else: self.move_to_goal()
 
     def follow_path(self):
-        self.odometry_timer.start()
         self.move_timer.start()
 
 # PATH FOLLOWING
