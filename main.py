@@ -24,34 +24,38 @@ centroids = {'goal': (0, 0), 'thymio': (0, 0), 'green': (0, 0), 'blue': (0, 0)}
 theta_thymio = 0
 localization = None
 
-# start kalman
-# kalman = Kalman(NOISE_POS_XY, NOISE_POS_XY, NOISE_POS_THETA, NOISE_MEASURE_XY, NOISE_MEASURE_XY)
-# start path following
-thymio = ThymioControl(position=(0,0), angle=0, kalman=Kalman(NOISE_POS_XY, NOISE_POS_XY, NOISE_POS_THETA, NOISE_MEASURE_XY, NOISE_MEASURE_XY))
+kalman = Kalman(NOISE_POS_XY, NOISE_POS_XY, NOISE_POS_THETA, NOISE_MEASURE_XY, NOISE_MEASURE_XY)
+thymio = ThymioControl(position=(0,0), angle=0)
 
 def compute_centroids():
     global centroids, theta_thymio, localization
     centroids, theta_thymio, localization = get_centroids(id_camera, corners, destination_corners, refined_color_dict_HSV, kernels, openings, prev_centroids=centroids, real_size=(NOMINAL_AREA_LENGTH, NOMINAL_AREA_WIDTH), real_time=False)
     print("centroids at", centroids['thymio'][0], centroids['thymio'][1])
     print("thymio angle at ", theta_thymio)
-    #thymio.kalman.state_correct((centroids['thymio'][0], centroids['thymio'][1], theta_thymio))
+    kalman.state_correct((centroids['thymio'][0], centroids['thymio'][1], theta_thymio))
+    thymio.position[0], thymio.position[1], thymio.angle = kalman.x
 
-def plot_localization():
-    global localization
-    cv.namedWindow("Localization Result")
-    cv.imshow("Localization Result", localization)
-    key = cv.waitKey(30)
-    cv.destroyWindow("Localization Result")
+def odometry():
+    kalman.state_prop(thymio.speed_target)
+    thymio.position[0], thymio.position[1], thymio.angle = kalman.x
+    print(thymio.position[0], thymio.position[1], thymio.angle*180/math.pi)
+
+# def plot_localization():
+#     global localization
+#     cv.namedWindow("Localization Result")
+#     cv.imshow("Localization Result", localization)
+#     key = cv.waitKey(30)
+#     cv.destroyWindow("Localization Result")
 
 # initialise position and path
 compute_centroids()
-thymio.kalman.set_state((centroids['thymio'][0], centroids['thymio'][1], theta_thymio))
+kalman.set_state((centroids['thymio'][0], centroids['thymio'][1], theta_thymio))
 thymio.position = (centroids['thymio'][0], centroids['thymio'][1])
 thymio.angle = theta_thymio
 path = discretize_map(segmentation, centroids)
-print("path is ", path)
 thymio.set_path(path)
-# start updating position and following path
-timer_centroids = RepeatedTimer(1.5, compute_centroids)
-timer_centroids.start()
+# start updating position and follow path
+image_timer = RepeatedTimer(1.5, compute_centroids)
+odometry_timer = RepeatedTimer(ODOMETRY_INTERVAL, odometry)
+image_timer.start(); odometry_timer.start()
 thymio.follow_path()

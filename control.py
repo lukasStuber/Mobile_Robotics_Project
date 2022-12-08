@@ -6,8 +6,7 @@ from RepeatedTimer import RepeatedTimer
 from constants import *
 
 class ThymioControl:
-    def __init__(self, position=(0,0), angle=0, kalman=None):
-        self.kalman = kalman
+    def __init__(self, position=(0,0), angle=0):
         self.client = ClientAsync()
         self.node = aw(self.client.wait_for_node())
         aw(self.node.lock())
@@ -26,7 +25,6 @@ class ThymioControl:
     # timers
         self.stop_timer = Timer(0, self.stop)
         self.move_timer = RepeatedTimer(MOVE_INTERVAL, self.navigation)
-        self.odometry_timer = RepeatedTimer(ODOMETRY_INTERVAL, self.estimate_position)
 
 # MOVEMENT
     def move(self, l_speed, r_speed=None):
@@ -87,7 +85,7 @@ class ThymioControl:
         self.odometry_timer.stop()
         self.stop_timer.cancel()
         self.stop()
-        #self.crab_rave()
+        self.crab_rave()
     
 # OBSTACLE AVOIDANCE
     def get_prox(self):
@@ -106,28 +104,27 @@ class ThymioControl:
         self.move(speed[0], speed[1])
 
 # ODOMETRY
-    def estimate_position(self):
-        if self.odometry_time is None: # initialisation
-             self.odometry_time = time.time()
-             return
-        interval = time.time() - self.odometry_time
-        self.odometry_time = time.time()
-        # # https://ocw.mit.edu/courses/6-186-mobile-autonomous-systems-laboratory-january-iap-2005/764fafce112bed6482c61f1593bd0977_odomtutorial.pdf
-        dx = interval*SPEED_TO_MMS*self.speed_target[0] # fetching the actual speed from the thymio is very slow (100ms) and inconsistent
-        dy = interval*SPEED_TO_MMS*self.speed_target[1] # odometry needs a high frequency to be accurate
-        da = -(dy - dx)/WHEEL_DIST # flip y direction to match the image processing output
-        dc = (dx + dy)/2
-        self.position = (self.position[0] + dc*math.cos(self.angle), self.position[1] + dc*math.sin(self.angle))
-        self.angle = (self.angle + da) % (2*math.pi)
-        #self.kalman.state_prop(self.speed_target)
-        #self.position = self.kalman.x[0:2]
-        #self.angle = self.kalman.x[2]
-        print(self.position[0], self.position[1], self.angle*180/math.pi)
+    # def estimate_position(self):
+    #     if self.odometry_time is None: # initialisation
+    #         self.odometry_time = time.time()
+    #         return
+    #     interval = time.time() - self.odometry_time
+    #     self.odometry_time = time.time()
+    #     # # https://ocw.mit.edu/courses/6-186-mobile-autonomous-systems-laboratory-january-iap-2005/764fafce112bed6482c61f1593bd0977_odomtutorial.pdf
+    #     dx = interval*SPEED_TO_MMS*self.speed_target[0] # fetching the actual speed from the thymio is very slow (100ms) and inconsistent
+    #     dy = interval*SPEED_TO_MMS*self.speed_target[1] # odometry needs a high frequency to be accurate
+    #     da = -(dy - dx)/WHEEL_DIST # flip y direction to match the image processing output
+    #     dc = (dx + dy)/2
+    #     self.position = (self.position[0] + dc*math.cos(self.angle), self.position[1] + dc*math.sin(self.angle))
+    #     self.angle = (self.angle + da) % (2*math.pi)
+    #     print(self.position[0], self.position[1], self.angle*180/math.pi)
 
 # OTHER
     def keyboard(self):
         import keyboard
         while True:
+            if keyboard.is_pressed('q'):
+                thymio.stop(); break
             vl = 0; vr = 0
             if keyboard.is_pressed('w'):
                 vl += 250; vr += 250
@@ -138,9 +135,6 @@ class ThymioControl:
             if keyboard.is_pressed('d'):
                 vl += 250; vr -= 250
             thymio.move(vl, vr)
-            if keyboard.is_pressed('q'):
-                thymio.stop()
-                break
 
     def crab_rave(self):
         program = '''
