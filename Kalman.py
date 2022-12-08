@@ -13,8 +13,8 @@ class Kalman:
         self.dt = None
         self.prev_time = None
         # state
-        self.x = np.zeros(3) # state
-        self.P = 1000*np.ones(3) # state covariance
+        self.x = np.zeros((3,1)) # state
+        self.P = 1000*np.ones((3,3)) # state covariance
         # process noise
         self.R = np.diag([NOISE_POS_XY, NOISE_POS_XY, NOISE_POS_THETA**2/6])
         # measurement noise
@@ -59,6 +59,15 @@ class Kalman:
         self.P = A@self.P@A.T + L@self.Q@L.T
     
     def state_correct(self, z):
+        z = np.reshape(z, (3,1))
         K = self.P@self.H.T@np.linalg.inv(self.H@self.P@self.H.T + self.R) # kalman gain
         self.x = self.x + K@(z - self.H@self.x) # state
         self.P = (np.eye(3) - K@self.H)@self.P # state covariance
+
+if __name__ == "__main__":
+    kalman = Kalman()
+    kalman.set_state([0, 0, 0])
+    kalman.state_prop([1, 1])
+    print(kalman.x)
+    kalman.state_correct([1,1,0])
+    print(kalman.x)
