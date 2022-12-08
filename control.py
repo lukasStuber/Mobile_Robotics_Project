@@ -100,9 +100,9 @@ class ThymioControl:
         self.stop_planned = False
         self.stop_timer.cancel()
         speed = np.dot(self.proxs, [[1, -1], [3, -3], [-3, 3], [-3, 3], [-1, 1]])/100
-        if ((self.proxs[2]+self.proxs[1]+self.proxs[3])<30):
+        if (np.sum(self.proxs[1:4]) < 30): # if no obstacle in front, move forward
            speed[0] += 100; speed[1] += 100
-        self.obst_direction = 1 if speed[0] > speed[1] else -1 # turn left when obstacle on the left and vice versa
+        self.obst_direction = 1 if speed[0] < speed[1] else -1 # turn left when obstacle on the left and vice versa
         self.move(speed[0], speed[1])
 
 # ODOMETRY
@@ -115,15 +115,13 @@ class ThymioControl:
         # # https://ocw.mit.edu/courses/6-186-mobile-autonomous-systems-laboratory-january-iap-2005/764fafce112bed6482c61f1593bd0977_odomtutorial.pdf
         dx = interval*SPEED_TO_MMS*self.speed_target[0] # fetching the actual speed from the thymio is very slow (100ms) and inconsistent
         dy = interval*SPEED_TO_MMS*self.speed_target[1] # odometry needs a high frequency to be accurate
-        da = -(dy - dx)/WHEEL_DIST
+        da = -(dy - dx)/WHEEL_DIST # flip y direction to match the image processing output
         dc = (dx + dy)/2
         self.position = (self.position[0] + dc*math.cos(self.angle), self.position[1] + dc*math.sin(self.angle))
         self.angle = (self.angle + da) % (2*math.pi)
         #self.kalman.state_prop(self.speed_target)
-        
         #self.position = self.kalman.x[0:2]
         #self.angle = self.kalman.x[2]
-        
         print(self.position[0], self.position[1], self.angle*180/math.pi)
 
 # OTHER
