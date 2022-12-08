@@ -11,7 +11,6 @@ class ThymioControl:
         self.client = ClientAsync()
         self.node = aw(self.client.wait_for_node())
         aw(self.node.lock())
-        aw(self.node.set_variables({"leds.temperature": [int(0),int(0)]})) # "leds.circle": [0,0,0,0,0,0,0,0], "leds.rc": [0], 
         self.position = position
         self.angle = angle
     # path following
@@ -59,18 +58,18 @@ class ThymioControl:
         print('moving')
         if self.stop_planned: return
         if self.obst_direction != 0: # avoid previously detected obstacle
-            self.timed_move(-self.obst_direction*OBST_TURN_SPEED + OBST_SPEED, self.obst_direction*OBST_TURN_SPEED + OBST_SPEED, OBST_TIME)
+            self.timed_move(self.obst_direction*OBST_TURN_SPEED + OBST_SPEED, -self.obst_direction*OBST_TURN_SPEED + OBST_SPEED, OBST_TIME)
             self.obst_direction = 0
             return
         goal = self.path[self.path_index]
         dist = math.sqrt((goal[0] - self.position[0])**2 + (goal[1] - self.position[1])**2)
         if dist > DIST_TOL:
-            angle = (math.atan2(goal[1] - self.position[1], goal[0] - self.position[0]) - self.angle + math.pi) % (2*math.pi) - math.pi
+            angle = (math.atan2(-(goal[1] - self.position[1]), goal[0] - self.position[0]) - self.angle + math.pi) % (2*math.pi) - math.pi
             if abs(angle) > ANGLE_TOL:
                 direction = 1 if angle > 0 else -1 # 1 = turn left, -1 = turn right
                 t = abs(angle)*WHEEL_DIST / (2*STANDARD_SPEED*SPEED_TO_MMS) - 0.1 # remove the await delay of move()
                 t = min(t, MAX_TIME) # clamp to allow for obstacle avoidance
-                self.timed_move(-direction*STANDARD_SPEED, direction*STANDARD_SPEED, t) # let kalman correct halfway
+                self.timed_move(direction*STANDARD_SPEED, -direction*STANDARD_SPEED, t) # let kalman correct halfway
             else:
                 t = dist / (STANDARD_SPEED*SPEED_TO_MMS) - 0.1 # remove the await delay of move()
                 t = min(t, MAX_TIME) # clamp to allow for obstacle avoidance
