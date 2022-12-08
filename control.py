@@ -125,6 +125,23 @@ class ThymioControl:
         print(self.position[0], self.position[1], self.angle*180/math.pi)
 
 # OTHER
+    def keyboard(self):
+        import keyboard
+        while True:
+            vl = 0; vr = 0
+            if keyboard.is_pressed('w'):
+                vl += 250; vr += 250
+            if keyboard.is_pressed('s'):
+                vl -= 250; vr -= 250
+            if keyboard.is_pressed('a'):
+                vl -= 250; vr += 250
+            if keyboard.is_pressed('d'):
+                vl += 250; vr -= 250
+            thymio.move(vl, vr)
+            if keyboard.is_pressed('q'):
+                thymio.stop()
+                break
+
     def crab_rave(self):
         program = '''
 var note[19] = [2349, 1976, 1568, 1568, 2349, 2349, 1760, 1397, 1397, 2349, 2349, 1760, 1397, 1397, 2094, 2094, 1319, 1319, 1397]
@@ -155,3 +172,4 @@ if __name__ == '__main__':
     thymio = ThymioControl(position=(0,0), angle=0, kalman=kalman)
     thymio.set_path([(0,0), (100,0), (100,100), (0,100), (0,0)])
     thymio.follow_path()
+    # thymio.keyboard()
