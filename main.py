@@ -48,7 +48,7 @@ compute_centroids()
 thymio.kalman.set_state((centroids['thymio'][0], centroids['thymio'][1], theta_thymio))
 thymio.position = (centroids['thymio'][0], centroids['thymio'][1])
 thymio.angle = theta_thymio
-path = discretize_map(segmentation, centroids, theta_thymio)
+path = discretize_map(segmentation, centroids)
 print("path is ", path)
 thymio.set_path(path)
 # start updating position and following path
