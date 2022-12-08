@@ -24,8 +24,8 @@ centroids = {'goal': (0, 0), 'thymio': (0, 0), 'green': (0, 0), 'blue': (0, 0)}
 theta_thymio = 0
 localization = None
 
-kalman = Kalman(NOISE_POS_XY, NOISE_POS_XY, NOISE_POS_THETA, NOISE_MEASURE_XY, NOISE_MEASURE_XY)
-thymio = ThymioControl(position=(0,0), angle=0)
+kalman = Kalman()
+thymio = ThymioControl()
 
 def compute_centroids():
     global centroids, theta_thymio, localization

@@ -8,7 +8,7 @@ from constants import *
 import time
 
 class Kalman:
-    def __init__(self, noisePosX, noisePosY, noiseTheta, noiseInputL, noiseInputR):
+    def __init__(self):
         # timestep for state propagation
         self.dt = None
         self.prev_time = None
@@ -16,9 +16,9 @@ class Kalman:
         self.x = np.zeros(3) # state
         self.P = 1000*np.ones(3) # state covariance
         # process noise
-        self.R = np.diag([noisePosX, noisePosY, noiseTheta**2/6])
+        self.R = np.diag([NOISE_POS_XY, NOISE_POS_XY, NOISE_POS_THETA**2/6])
         # measurement noise
-        self.Q = np.diag([noiseInputL**2/6, noiseInputR**2/6])
+        self.Q = np.diag([NOISE_MEASURE_XY**2/6, NOISE_MEASURE_XY**2/6])
         # Observation Matrix H
         self.H = np.array([[1, 0, 0],
                            [0, 1, 0],
