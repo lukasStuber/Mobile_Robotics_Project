@@ -27,9 +27,10 @@ def delete_outliers(data):
             main_data.append([point[0], point[1]])
     return main_data
 
-def discretize_map(final_seg, centroids, theta_thymio):
+def discretize_map(final_seg, centroids):
     map_arr = final_seg
     size_x, size_y, _ = map_arr.shape
+    print(size_x, size_y)
     kernel = 6
 
     path_arr = np.zeros([size_x//(2*kernel+1), size_y//(2*kernel+1)], np.uint8)
@@ -85,7 +86,9 @@ def discretize_map(final_seg, centroids, theta_thymio):
     blue_x = (min(start_patch_blue[:,0])+max(start_patch_blue[:,0]))//2
     blue_y = (min(start_patch_blue[:,1])+max(start_patch_blue[:,1]))//2
 
-    start = ((blue_x+green_x)//2, (blue_y+green_y)//2)
+    #start = ((blue_x+green_x)//2, (blue_y+green_y)//2)
+    start = (centroids['thymio'][0], centroids['thymio'][1]) 
+    start = (centroids['goal'][0], centroids['goal'][1]) 
 
     x,y = np.mgrid[0:path_x:1, 0:path_y:1]
     pos = np.empty(x.shape + (2,))

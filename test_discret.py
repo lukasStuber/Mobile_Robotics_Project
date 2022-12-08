@@ -10,4 +10,4 @@ segmentation = np.array(image)
 
 #print(segmentation.shape)
 #print(segmentation[420, 800, :])
-path = discretize_map(segmentation)
+path = discretize_map(segmentation) 
