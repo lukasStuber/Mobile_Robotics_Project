@@ -3,6 +3,7 @@ from pathfinding import *
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
+import cv2
 
 def check_patch(patch):
     threshold = 200
@@ -30,21 +31,22 @@ def delete_outliers(data):
 def discretize_map(final_seg, centroids):
     map_arr = final_seg
     size_x, size_y, _ = map_arr.shape
-    print(size_x, size_y)
     kernel = 6
 
     path_arr = np.zeros([size_x//(2*kernel+1), size_y//(2*kernel+1)], np.uint8)
+    path_x, path_y = path_arr.shape
+
     end_patch = []
     start_patch_green = []
     start_patch_blue = []
 
-    for x in np.arange(kernel, size_x-kernel, 2*kernel+1):
-        for y in np.arange(kernel, size_y-kernel, 2*kernel+1):
-            patch = (x//(2*kernel+1), y//(2*kernel+1))
+    for x in range(path_x):
+        for y in range(path_y):
+            patch = (x,y)
 
-            red_patch =   map_arr[x-kernel:x+kernel+1, y-kernel:y+kernel+1, 0]
-            green_patch = map_arr[x-kernel:x+kernel+1, y-kernel:y+kernel+1, 1]
-            blue_patch =  map_arr[x-kernel:x+kernel+1, y-kernel:y+kernel+1, 2]
+            red_patch =   map_arr[x*(2*kernel+1)-kernel:x*(2*kernel+1)+kernel+1, y*(2*kernel+1)-kernel:y*(2*kernel+1)+kernel+1, 0]
+            green_patch = map_arr[x*(2*kernel+1)-kernel:x*(2*kernel+1)+kernel+1, y*(2*kernel+1)-kernel:y*(2*kernel+1)+kernel+1, 1]
+            blue_patch =  map_arr[x*(2*kernel+1)-kernel:x*(2*kernel+1)+kernel+1, y*(2*kernel+1)-kernel:y*(2*kernel+1)+kernel+1, 2]
 
             # check for red
             if   (not check_patch(red_patch) and (not check_patch(green_patch)) and (check_patch(blue_patch))):
@@ -66,8 +68,8 @@ def discretize_map(final_seg, centroids):
                 path_arr[patch] = 0
             # free space
             else: path_arr[patch] = 0
-
-    path_x, path_y = path_arr.shape
+    #cv2.imshow("title",path_arr)
+    #key = cv2.waitKey(0)
 
     end_patch = np.array(end_patch)
     end_patch = np.array(delete_outliers(end_patch))
@@ -86,9 +88,9 @@ def discretize_map(final_seg, centroids):
     blue_x = (min(start_patch_blue[:,0])+max(start_patch_blue[:,0]))//2
     blue_y = (min(start_patch_blue[:,1])+max(start_patch_blue[:,1]))//2
 
-    #start = ((blue_x+green_x)//2, (blue_y+green_y)//2)
-    start = (centroids['thymio'][0], centroids['thymio'][1]) 
-    start = (centroids['goal'][0], centroids['goal'][1]) 
+    start = ((blue_x+green_x)//2, (blue_y+green_y)//2)
+    #start = (centroids['thymio'][0], centroids['thymio'][1]) 
+    #start = (centroids['goal'][0], centroids['goal'][1]) 
 
     x,y = np.mgrid[0:path_x:1, 0:path_y:1]
     pos = np.empty(x.shape + (2,))
@@ -111,4 +113,5 @@ def discretize_map(final_seg, centroids):
     plt.show()
     path = path*(2*kernel + 1)
     path[:, [1,0]] = path[:, [0,1]]
+    print(path)
     return path
