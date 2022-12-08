@@ -27,7 +27,7 @@ def delete_outliers(data):
             main_data.append([point[0], point[1]])
     return main_data
 
-def discretize_map(final_seg):
+def discretize_map(final_seg, centroids, theta_thymio):
     map_arr = final_seg
     size_x, size_y, _ = map_arr.shape
     kernel = 6
@@ -107,7 +107,5 @@ def discretize_map(final_seg):
     ax_astar.scatter(goal[1], goal[0], marker="o", color = 'purple', s=200)
     plt.show()
     path = path*(2*kernel + 1)
-    temp = path[:,0]
-    path[:,0] = path[:,1]
-    path[:,1] = temp
+    path[:, [1,0]] = path[:, [0,1]]
     return path

@@ -32,6 +32,8 @@ thymio = ThymioControl(position=(0,0), angle=0, kalman=Kalman(NOISE_POS_XY, NOIS
 def compute_centroids():
     global centroids, theta_thymio, localization
     centroids, theta_thymio, localization = get_centroids(id_camera, corners, destination_corners, refined_color_dict_HSV, kernels, openings, prev_centroids=centroids, real_size=(NOMINAL_AREA_LENGTH, NOMINAL_AREA_WIDTH), real_time=False)
+    print("centroids at", centroids['thymio'][0], centroids['thymio'][1])
+    print("thymio angle at ", theta_thymio)
     #thymio.kalman.state_correct((centroids['thymio'][0], centroids['thymio'][1], theta_thymio))
 
 def plot_localization():
@@ -42,8 +44,12 @@ def plot_localization():
     cv.destroyWindow("Localization Result")
 
 # initialise position and path
+compute_centroids()
 thymio.kalman.set_state((centroids['thymio'][0], centroids['thymio'][1], theta_thymio))
-path = discretize_map(segmentation)
+thymio.position = (centroids['thymio'][0], centroids['thymio'][1])
+thymio.angle = theta_thymio
+path = discretize_map(segmentation, centroids, theta_thymio)
+print("path is ", path)
 thymio.set_path(path)
 # start updating position and following path
 timer_centroids = RepeatedTimer(1.5, compute_centroids)
