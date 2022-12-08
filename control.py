@@ -64,7 +64,7 @@ class ThymioControl:
         goal = self.path[self.path_index]
         dist = math.sqrt((goal[0] - self.position[0])**2 + (goal[1] - self.position[1])**2)
         if dist > DIST_TOL:
-            angle = (math.atan2(-(goal[1] - self.position[1]), goal[0] - self.position[0]) - self.angle + math.pi) % (2*math.pi) - math.pi
+            angle = (math.atan2(goal[1] - self.position[1], goal[0] - self.position[0]) - self.angle + math.pi) % (2*math.pi) - math.pi
             if abs(angle) > ANGLE_TOL:
                 direction = 1 if angle > 0 else -1 # 1 = turn left, -1 = turn right
                 t = abs(angle)*WHEEL_DIST / (2*STANDARD_SPEED*SPEED_TO_MMS) - 0.1 # remove the await delay of move()
@@ -122,7 +122,7 @@ class ThymioControl:
         self.kalman.state_prop(self.speed_target)
         self.position = self.kalman.x[0:2]
         self.angle = self.kalman.x[2]
-        print(self.position, self.angle*180/math.pi)
+        print(self.position[0], self.position[1], self.angle*180/math.pi)
 
 # OTHER
     def crab_rave(self):
@@ -153,5 +153,5 @@ if __name__ == '__main__':
     from Kalman import Kalman
     kalman = Kalman(NOISE_POS_XY, NOISE_POS_XY, NOISE_POS_THETA, NOISE_MEASURE_XY, NOISE_MEASURE_XY)
     thymio = ThymioControl(position=(0,0), angle=0, kalman=kalman)
-    thymio.set_path([(0,0), (1000,0), (1000,1000), (0,1000), (0,0)])
+    thymio.set_path([(0,0), (100,0), (100,100), (0,100), (0,0)])
     thymio.follow_path()
