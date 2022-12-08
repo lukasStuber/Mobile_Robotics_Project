@@ -79,7 +79,6 @@ class ThymioControl:
 
     def end_path(self):
         self.move_timer.stop()
-        self.odometry_timer.stop()
         self.stop_timer.cancel()
         self.stop()
         self.crab_rave()
