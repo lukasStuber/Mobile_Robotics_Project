@@ -25,7 +25,8 @@ class Kalman:
                            [0, 0, 1]])
     
     def set_state(self, x0):
-        self.x = x0 # initial state
+        self.x = np.array(x0) # initial state
+        self.x = np.reshape(x0, (3,1))
 
     def state_prop(self, u):
         if self.prev_time is None: # initialisation
