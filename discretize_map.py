@@ -98,7 +98,7 @@ def discretize_map(final_seg):
     # Run A*
     path, visitedNodes = A_Star(start, goal, h, coords, path_arr, movement_type="8N", max_val=path_arr.shape)
     path = np.array(path).reshape(-1, 2)
-    # visitedNodes = np.array(visitedNodes).reshape(-1, 2)
+
     cmap = colors.ListedColormap(['white', 'red'])
     fig_astar, ax_astar = create_empty_plot((path_y, path_x))
     ax_astar.imshow(path_arr, cmap=cmap)
@@ -107,4 +107,7 @@ def discretize_map(final_seg):
     ax_astar.scatter(goal[1], goal[0], marker="o", color = 'purple', s=200)
     plt.show()
     path = path*(2*kernel + 1)
+    temp = path[:,0]
+    path[:,0] = path[:,1]
+    path[:,1] = temp
     return path
