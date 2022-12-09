@@ -42,7 +42,8 @@ class ThymioControl:
 
     def navigation(self):
         self.get_prox()
-        if np.any(self.proxs > PROX_THRESHOLD): self.avoid_obstacles()
+        if np.any(self.proxs > PROX_THRESHOLD):
+            print(self.proxs); self.avoid_obstacles()
         else: self.move_to_goal()
 
     def follow_path(self):
@@ -50,7 +51,6 @@ class ThymioControl:
 
 # PATH FOLLOWING
     def move_to_goal(self):
-        print('moving')
         if self.stop_planned: return
         if self.obst_direction != 0: # avoid previously detected obstacle
             self.timed_move(self.obst_direction*OBST_TURN_SPEED + OBST_SPEED, -self.obst_direction*OBST_TURN_SPEED + OBST_SPEED, OBST_TIME)
@@ -89,7 +89,6 @@ class ThymioControl:
         self.proxs = np.array(list(self.node.v.prox.horizontal))[:-2]
 
     def avoid_obstacles(self):
-        print('avoiding')
         self.stop_planned = False
         self.stop_timer.cancel()
         speed = np.dot(self.proxs, [[1, -1], [3, -3], [-3, 3], [-3, 3], [-1, 1]])/100
@@ -141,8 +140,15 @@ onevent button.center
 
 if __name__ == '__main__':
     from Kalman import Kalman
-    kalman = Kalman(NOISE_POS_XY, NOISE_POS_XY, NOISE_POS_THETA, NOISE_MEASURE_XY, NOISE_MEASURE_XY)
-    thymio = ThymioControl(position=(0,0), angle=0, kalman=kalman)
+    kalman = Kalman()
+    thymio = ThymioControl()
+    def odometry():
+        kalman.state_prop(thymio.speed_target)
+        thymio.position[0] = kalman.x[0]
+        thymio.position[1] = kalman.x[1]
+        thymio.angle = kalman.x[2]
+        print(thymio.position[0], thymio.position[1], thymio.angle*180/math.pi)
+    odometry_timer = RepeatedTimer(ODOMETRY_INTERVAL, odometry)
+    odometry_timer.start()
     thymio.set_path([(0,0), (100,0), (100,100), (0,100), (0,0)])
     thymio.follow_path()
-    # thymio.keyboard()
