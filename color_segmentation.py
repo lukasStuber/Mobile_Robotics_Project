@@ -177,8 +177,12 @@ def get_color_mask(camera_device, corners, destination_corners, real_size=(1600,
                 color_mask = cv.erode(color_mask, kernel)
 
             ## [Enlarge obstacles]
+            h, l = cropped_frame.shape[:2]
+            L, H = real_size
+            inflate_mm = 45  # thymio length is 110 mm
+            inflate_pixel = (int((2 * inflate_mm + 1) * l/L), int((2 * inflate_mm + 1) * h/H))
             if color == "yellow":
-                color_mask = cv.dilate(color_mask, np.ones((30, 30), np.uint8))
+                color_mask = cv.dilate(color_mask, np.ones(inflate_pixel, np.uint8))
             ## [Enlarge obstacles]
 
             color_masks[color] = color_mask

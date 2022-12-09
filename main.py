@@ -30,17 +30,17 @@ thymio = ThymioControl()
 def compute_centroids():
     global centroids, theta_thymio, localization
     centroids, theta_thymio, localization = get_centroids(id_camera, corners, destination_corners, refined_color_dict_HSV, kernels, openings, prev_centroids=centroids, real_size=(NOMINAL_AREA_LENGTH, NOMINAL_AREA_WIDTH), real_time=False)
-    print("centroids at", centroids['thymio'][0], centroids['thymio'][1])
-    print("thymio angle at ", theta_thymio)
+    #print("centroids at", centroids['thymio'][0], centroids['thymio'][1])
+    #print("thymio angle at ", theta_thymio)
     kalman.state_correct(np.array([centroids['thymio'][0], centroids['thymio'][1], theta_thymio]))
-    thymio.position = (kalman.x[0], kalman.x[1])
-    thymio.angle = kalman.x[2]
+    thymio.position = (kalman.x[0, 0], kalman.x[1, 0])
+    thymio.angle = kalman.x[2, 0]
 
 def odometry():
     kalman.state_prop(thymio.speed_target)
-    thymio.position = (kalman.x[0], kalman.x[1])
-    thymio.angle = kalman.x[2]
-    print(thymio.position[0], thymio.position[1], thymio.angle*180/math.pi)
+    thymio.position = (kalman.x[0, 0], kalman.x[1, 0])
+    thymio.angle = kalman.x[2, 0]
+    #print(thymio.position[0], thymio.position[1], thymio.angle*180/math.pi)
 
 # def plot_localization():
 #     global localization

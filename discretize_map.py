@@ -79,11 +79,13 @@ def discretize_map(final_seg, centroids):
 
     start_patch_green = np.array(start_patch_green)
     start_patch_green = np.array(delete_outliers(start_patch_green))
+    print(start_patch_green.shape)
     green_x = (min(start_patch_green[:,0])+max(start_patch_green[:,0]))//2
     green_y = (min(start_patch_green[:,1])+max(start_patch_green[:,1]))//2
     
     start_patch_blue = np.array(start_patch_blue)
     start_patch_blue = np.array(delete_outliers(start_patch_blue))
+    print(start_patch_blue.shape)
     blue_x = (min(start_patch_blue[:,0])+max(start_patch_blue[:,0]))//2
     blue_y = (min(start_patch_blue[:,1])+max(start_patch_blue[:,1]))//2
 
@@ -132,4 +134,4 @@ def discretize_map(final_seg, centroids):
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    return path
+    return path_short
