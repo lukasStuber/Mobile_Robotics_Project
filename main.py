@@ -14,7 +14,7 @@ id_camera = 1
 ##[Parking segmentation]
 corners, destination_corners = set_parking_limits(id_camera)
 ##[Color segmentation]
-segmentation, refined_color_dict_HSV, kernels, openings = get_color_mask(id_camera, corners, destination_corners)
+segmentation, refined_color_dict_HSV, kernels, openings = get_color_mask(id_camera, corners, destination_corners, real_size=(NOMINAL_AREA_LENGTH, NOMINAL_AREA_WIDTH))
 cv.namedWindow("Segmentation Result")
 cv.imshow("Segmentation Result", segmentation)
 key = cv.waitKey(0)

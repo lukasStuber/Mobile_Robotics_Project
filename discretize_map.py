@@ -7,14 +7,9 @@ import cv2
 
 def check_patch(patch):
     threshold = 200
-    a,b = patch.shape
-    for x in range(a):
-        for y in range(b):
-            if patch[x,y] > threshold:
-                return True
-    return False
+    return (patch > threshold).any()
 
-def delete_outliers(data):
+def delete_outliers(data):  # could be parallelized too
     main_data = []
     threshold = 2
     mean_x = np.mean(data[:,0])
@@ -44,32 +39,34 @@ def discretize_map(final_seg, centroids):
         for y in range(path_y):
             patch = (x,y)
 
-            red_patch =   map_arr[x*(2*kernel+1)-kernel:x*(2*kernel+1)+kernel+1, y*(2*kernel+1)-kernel:y*(2*kernel+1)+kernel+1, 0]
+            red_patch =   map_arr[x*(2*kernel+1)-kernel:x*(2*kernel+1)+kernel+1, y*(2*kernel+1)-kernel:y*(2*kernel+1)+kernel+1, 2]
             green_patch = map_arr[x*(2*kernel+1)-kernel:x*(2*kernel+1)+kernel+1, y*(2*kernel+1)-kernel:y*(2*kernel+1)+kernel+1, 1]
-            blue_patch =  map_arr[x*(2*kernel+1)-kernel:x*(2*kernel+1)+kernel+1, y*(2*kernel+1)-kernel:y*(2*kernel+1)+kernel+1, 2]
+            blue_patch =  map_arr[x*(2*kernel+1)-kernel:x*(2*kernel+1)+kernel+1, y*(2*kernel+1)-kernel:y*(2*kernel+1)+kernel+1, 0]
+
+            red_in_patch = check_patch(red_patch)
+            green_in_patch = check_patch(green_patch)
+            blue_in_patch = check_patch(blue_patch)
 
             # check for red
-            if   (not check_patch(red_patch) and (not check_patch(green_patch)) and (check_patch(blue_patch))):
+            if red_in_patch and (not green_in_patch) and (not blue_in_patch):
                 end_patch.append(list(patch))
                 path_arr[patch] = 0
             # check for yellow
-            elif (not check_patch(red_patch) and (check_patch(green_patch)) and (check_patch(blue_patch))):
+            elif red_in_patch and green_in_patch and (not blue_in_patch):
                 path_arr[patch] = 1
             # check for white
-            elif (check_patch(red_patch) and (check_patch(green_patch)) and (check_patch(blue_patch))):
+            elif red_in_patch and green_in_patch and blue_in_patch:  # useful ??
                 path_arr[patch] = 1
             # check for blue
-            elif ((check_patch(red_patch)) and (not check_patch(green_patch)) and (not check_patch(blue_patch))):
+            elif (not red_in_patch) and (not green_in_patch) and blue_in_patch:
                 start_patch_blue.append(list(patch))
                 path_arr[patch] = 0
             # check for green
-            elif ((not check_patch(red_patch)) and (check_patch(green_patch)) and (not check_patch(blue_patch))):
+            elif (not red_in_patch) and green_in_patch and (not blue_in_patch):
                 start_patch_green.append(list(patch))
                 path_arr[patch] = 0
             # free space
             else: path_arr[patch] = 0
-    #cv2.imshow("title",path_arr)
-    #key = cv2.waitKey(0)
 
     end_patch = np.array(end_patch)
     end_patch = np.array(delete_outliers(end_patch))
@@ -89,8 +86,6 @@ def discretize_map(final_seg, centroids):
     blue_y = (min(start_patch_blue[:,1])+max(start_patch_blue[:,1]))//2
 
     start = ((blue_x+green_x)//2, (blue_y+green_y)//2)
-    #start = (centroids['thymio'][0], centroids['thymio'][1]) 
-    #start = (centroids['goal'][0], centroids['goal'][1]) 
 
     x,y = np.mgrid[0:path_x:1, 0:path_y:1]
     pos = np.empty(x.shape + (2,))
@@ -105,16 +100,35 @@ def discretize_map(final_seg, centroids):
     path = np.array(path).reshape(-1, 2)
 
     cmap = colors.ListedColormap(['white', 'red'])
-    fig_astar, ax_astar = create_empty_plot((path_y, path_x))
+    fig_astar, ax_astar = create_empty_plot((path_y, path_x))  # this plot is in reduced shape, should plot this after expansion
     ax_astar.imshow(path_arr, cmap=cmap)
     ax_astar.plot(path[:,1], path[:,0], marker="o", color = 'blue')
     ax_astar.scatter(start[1], start[0], marker="o", color = 'green', s=200)
     ax_astar.scatter(goal[1], goal[0], marker="o", color = 'purple', s=200)
+    ax_astar.invert_yaxis()  # add this just to invert y axis
     plt.show()
+
+    # Space path points with kernel size
     path = path*(2*kernel + 1)
-    path[:, [1,0]] = path[:, [0,1]]
+    # Exchange x and y coordinates of path points from A*
+    # path[:, [1,0]] = path[:, [0,1]]  # we should not do that, cf imshow below already good order
     a,b = path.shape
+    # Sample 1/5 of path points 
     path_short = path[np.arange(0,a,5)]
+    # Reverse order of path points
     path_short[-1,:] = path[-1,:]
 
     return path_short
+
+if __name__ == '__main__':
+    segmentation = cv2.imread("/Users/antoineescoyez/Desktop/micro452/Project/Mobile_Robotics_Project/Astar_test.png")
+    cv2.imshow("Plot", segmentation)
+    k = cv2.waitKey(0)
+    cv2.destroyWindow("Plot")
+    path = discretize_map(segmentation, None)
+    test = segmentation.copy()
+    for point in path:
+        test[point[0], point[1], :] = np.array([255, 255, 255])
+    cv2.imshow("Plot", test)
+    k = cv2.waitKey(0)
+    cv2.destroyWindow("Plot")
