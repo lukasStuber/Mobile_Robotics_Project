@@ -122,13 +122,7 @@ def find_dest(pts):
 ## [functions for homomorphy]
 
 def set_parking_limits(camera_device):
-    global low_H
-    global high_H
-    global low_S
-    global high_S
-    global low_V
-    global high_V
-    global kernel_size
+    global low_H, high_H, low_S, high_S, low_V, high_V, kernel_size
 
     ## [cap]
     cap = cv.VideoCapture(camera_device)
