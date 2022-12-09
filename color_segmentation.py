@@ -31,48 +31,42 @@ color_dict_HSV = {'yellow': [[25, 50, 70], [35, 255, 255]],
 
 ## [HSV settings for color]
 def on_low_H_thresh_trackbar(val):
-    global low_H
-    global high_H
+    global low_H, high_H
     low_H = val
     low_H = min(high_H-1, low_H)
     for color in color_dict_HSV:
         cv.setTrackbarPos(low_H_name, window_detection_name + color, low_H)
 
 def on_high_H_thresh_trackbar(val):
-    global low_H
-    global high_H
+    global low_H, high_H
     high_H = val
     high_H = max(high_H, low_H+1)
     for color in color_dict_HSV:
         cv.setTrackbarPos(high_H_name, window_detection_name + color, high_H)
 
 def on_low_S_thresh_trackbar(val):
-    global low_S
-    global high_S
+    global low_S, high_S
     low_S = val
     low_S = min(high_S-1, low_S)
     for color in color_dict_HSV:
         cv.setTrackbarPos(low_S_name, window_detection_name + color, low_S)
 
 def on_high_S_thresh_trackbar(val):
-    global low_S
-    global high_S
+    global low_S, high_S
     high_S = val
     high_S = max(high_S, low_S+1)
     for color in color_dict_HSV:
         cv.setTrackbarPos(high_S_name, window_detection_name + color, high_S)
 
 def on_low_V_thresh_trackbar(val):
-    global low_V
-    global high_V
+    global low_V, high_V
     low_V = val
     low_V = min(high_V-1, low_V)
     for color in color_dict_HSV:
         cv.setTrackbarPos(low_V_name, window_detection_name + color, low_V)
 
 def on_high_V_thresh_trackbar(val):
-    global low_V
-    global high_V
+    global low_V, high_V
     high_V = val
     high_V = max(high_V, low_V+1)
     for color in color_dict_HSV:
@@ -98,7 +92,7 @@ def morphology_type_trackbar(val):
 ## [morphology settings for color]
 
 ## [rescale frame to speed up computation]
-def rescale_frame(frame, scale_percent=20):
+def rescale_frame(frame, scale_percent):
     width = int(frame.shape[1] * scale_percent / 100)
     height = int(frame.shape[0] * scale_percent / 100)
     dsize = (width, height)
@@ -106,14 +100,8 @@ def rescale_frame(frame, scale_percent=20):
 ## [rescale frame to speed up computation]
 
 def get_color_mask(camera_device, corners, destination_corners, real_size=(1600, 820), HSV_preset=color_dict_HSV, kernel_preset=None, opening_preset=None):
-    global low_H
-    global high_H
-    global low_S
-    global high_S
-    global low_V
-    global high_V
-    global kernel_size
-    global opening
+    global low_H, high_H, low_S, high_S, low_V, high_V
+    global kernel_size, opening
 
     color_masks = dict()
     refined_color_dict_HSV = dict()
