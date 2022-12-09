@@ -48,7 +48,6 @@ class ThymioControl:
         else: self.move_to_goal()
 
     def follow_path(self):
-        self.odometry_timer.start()
         self.move_timer.start()
 
 # PATH FOLLOWING
@@ -60,6 +59,7 @@ class ThymioControl:
             self.obst_direction = 0
             return
         goal = self.path[self.path_index]
+        print("goal at ", goal)
         dist = math.sqrt((goal[0] - self.position[0])**2 + (goal[1] - self.position[1])**2)
         if dist > DIST_TOL:
             angle = (math.atan2(goal[1] - self.position[1], goal[0] - self.position[0]) - self.angle + math.pi) % (2*math.pi) - math.pi
@@ -82,7 +82,6 @@ class ThymioControl:
 
     def end_path(self):
         self.move_timer.stop()
-        self.odometry_timer.stop()
         self.stop_timer.cancel()
         self.stop()
         self.crab_rave()

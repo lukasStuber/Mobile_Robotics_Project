@@ -33,11 +33,13 @@ def compute_centroids():
     print("centroids at", centroids['thymio'][0], centroids['thymio'][1])
     print("thymio angle at ", theta_thymio)
     kalman.state_correct((centroids['thymio'][0], centroids['thymio'][1], theta_thymio))
-    thymio.position[0], thymio.position[1], thymio.angle = kalman.x
+    thymio.position = (kalman.x[0], kalman.x[1])
+    thymio.angle = kalman.x[2]
 
 def odometry():
     kalman.state_prop(thymio.speed_target)
-    thymio.position[0], thymio.position[1], thymio.angle = kalman.x
+    thymio.position = (kalman.x[0], kalman.x[1])
+    thymio.angle = kalman.x[2]
     print(thymio.position[0], thymio.position[1], thymio.angle*180/math.pi)
 
 # def plot_localization():
@@ -57,5 +59,6 @@ thymio.set_path(path)
 # start updating position and follow path
 image_timer = RepeatedTimer(1.5, compute_centroids)
 odometry_timer = RepeatedTimer(ODOMETRY_INTERVAL, odometry)
-image_timer.start(); odometry_timer.start()
+#image_timer.start()
+odometry_timer.start()
 thymio.follow_path()

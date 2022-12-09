@@ -113,5 +113,8 @@ def discretize_map(final_seg, centroids):
     plt.show()
     path = path*(2*kernel + 1)
     path[:, [1,0]] = path[:, [0,1]]
-    print(path)
-    return path
+    a,b = path.shape
+    path_short = path[np.arange(0,a,5)]
+    path_short[-1,:] = path[-1,:]
+
+    return path_short

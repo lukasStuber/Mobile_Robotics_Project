@@ -41,6 +41,7 @@ class Kalman:
         (vx, vy) = SPEED_TO_MMS*np.array(u) # left and right wheel speeds [mm/s]
         vt = (vx + vy)/2 # translation speed [mm/s]
         vr = -(vy - vx)/WHEEL_DIST # rotation speed [rad/s]
+        print("angle is ", self.x[2])
         sin = math.sin(self.x[2])
         cos = math.cos(self.x[2])
         # state propagation
@@ -59,6 +60,7 @@ class Kalman:
         self.P = A@self.P@A.T + L@self.Q@L.T
     
     def state_correct(self, z):
+        z = np.array(z)
         K = self.P@self.H.T@np.linalg.inv(self.H@self.P@self.H.T + self.R) # kalman gain
         self.x = self.x + K@(z - self.H@self.x) # state
         self.P = (np.eye(3) - K@self.H)@self.P # state covariance

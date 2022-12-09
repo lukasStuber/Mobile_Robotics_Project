@@ -2,6 +2,7 @@ from __future__ import print_function
 import cv2 as cv
 import argparse
 import numpy as np
+import math
 
 ## [rescale frame to speed up computation]
 def rescale_frame(frame, scale_percent=20):
@@ -96,9 +97,9 @@ def get_centroids(camera_device, corners, destination_corners, HSV_preset, kerne
 
         y_goal_prev, x_goal_prev = y_goal, x_goal
         y_thymio_prev, x_thymio_prev = y_thymio, x_thymio
-        theta_thymio = np.arctan2(y_green - y_blue, x_green - x_blue) + np.pi/2
-        x_arrow = int(x_thymio + np.cos(theta_thymio) * arrow_len)
-        y_arrow = int(y_thymio + np.sin(theta_thymio) * arrow_len)
+        theta_thymio = np.arctan2(y_green - y_blue, x_green - x_blue) + math.pi/2
+        x_arrow = int(x_thymio + math.cos(theta_thymio) * arrow_len)
+        y_arrow = int(y_thymio + math.sin(theta_thymio) * arrow_len)
         ## [Compute centroids]
 
         cv.circle(cropped_frame, (x_goal, y_goal), 2, (0, 0, 255), -1)
