@@ -32,7 +32,7 @@ def compute_centroids():
     centroids, theta_thymio, localization = get_centroids(id_camera, corners, destination_corners, refined_color_dict_HSV, kernels, openings, prev_centroids=centroids, real_size=(NOMINAL_AREA_LENGTH, NOMINAL_AREA_WIDTH), real_time=False)
     print("centroids at", centroids['thymio'][0], centroids['thymio'][1])
     print("thymio angle at ", theta_thymio)
-    kalman.state_correct((centroids['thymio'][0], centroids['thymio'][1], theta_thymio))
+    kalman.state_correct(np.array([centroids['thymio'][0], centroids['thymio'][1], theta_thymio]))
     thymio.position = (kalman.x[0], kalman.x[1])
     thymio.angle = kalman.x[2]
 
@@ -60,6 +60,6 @@ thymio.set_path(path)
 # start updating position and follow path
 image_timer = RepeatedTimer(1.5, compute_centroids)
 odometry_timer = RepeatedTimer(ODOMETRY_INTERVAL, odometry)
-#image_timer.start()
+image_timer.start()
 odometry_timer.start()
 thymio.follow_path()

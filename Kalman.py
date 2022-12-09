@@ -37,7 +37,7 @@ class Kalman:
         # https://ocw.mit.edu/courses/6-186-mobile-autonomous-systems-laboratory-january-iap-2005/764fafce112bed6482c61f1593bd0977_odomtutorial.pdf
         (dx, dy) = self.dt*SPEED_TO_MMS*np.array(u) # left and right displacements [mm]
         da = -(dy - dx)/WHEEL_DIST # rotation angle [rad]
-        dc = (dx + dy)/2 # center displacement [mm]
+        dc = (dx + dy)/2 # center displacement (arc length) [mm]
         (vx, vy) = SPEED_TO_MMS*np.array(u) # left and right wheel speeds [mm/s]
         vt = (vx + vy)/2 # translation speed [mm/s]
         vr = -(vy - vx)/WHEEL_DIST # rotation speed [rad/s]
@@ -49,15 +49,15 @@ class Kalman:
         self.x[1] = self.x[1] + dc*sin
         self.x[2] = (self.x[2] + da) % (2*math.pi)
         # transition function (state propagation matrix)
-        A = np.array([[1, 0, -self.dt*vt*sin - 0.5*self.dt**2*vt*vr*cos],
-                      [0, 1,  self.dt*vt*cos - 0.5*self.dt**2*vt*vr*sin],
+        A = np.array([[1, 0, -self.dt*vt*sin],
+                      [0, 1,  self.dt*vt*cos],
                       [0, 0, 1]])
         # input transition matrix
-        L = np.array([[self.dt*vx/2*cos - ((self.dt**2)/(2*WHEEL_DIST))*vx**2*sin, -self.dt*vy/2*cos + ((self.dt**2)/(2*WHEEL_DIST))*vy**2*sin],
-                      [self.dt*vx/2*cos + ((self.dt**2)/(2*WHEEL_DIST))*vx**2*cos, -self.dt*vx/2*sin - ((self.dt**2)/(2*WHEEL_DIST))*vx**2*cos],
-                      [self.dt*vx/WHEEL_DIST, -self.dt*vy/WHEEL_DIST]])           
+        # L = np.array([[self.dt*vx/2*cos - ((self.dt**2)/(2*WHEEL_DIST))*vx**2*sin, -self.dt*vy/2*cos + ((self.dt**2)/(2*WHEEL_DIST))*vy**2*sin],
+        #              [self.dt*vx/2*cos + ((self.dt**2)/(2*WHEEL_DIST))*vx**2*cos, -self.dt*vx/2*sin - ((self.dt**2)/(2*WHEEL_DIST))*vx**2*cos],
+        #              [self.dt*vx/WHEEL_DIST, -self.dt*vy/WHEEL_DIST]])           
         # state covariance propagation
-        self.P = A@self.P@A.T + L@self.Q@L.T
+        self.P = A@self.P@A.T + self.Q  # why not just L@self.Q@L.T 
     
     def state_correct(self, z):
         z = np.reshape(z, (3,1))
