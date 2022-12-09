@@ -1,7 +1,6 @@
 '''
 constant.py
-Module defining all the constants and magic numbers used to control the robot
-Authors: Neil Chennoufi, Christopher Hémon, Jérémy Mayoraz, Arthur Rémondeau
+Module defining all the constants used to control the robot
 '''
 import math
 

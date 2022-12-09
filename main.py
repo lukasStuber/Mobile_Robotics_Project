@@ -1,8 +1,8 @@
 from __future__ import print_function
 import cv2 as cv
-from image_processing.parking_segmentation import *
-from image_processing.color_segmentation import *
-from image_processing.color_centroids import *
+from parking_segmentation import *
+from color_segmentation import *
+from color_centroids import *
 from discretize_map import *
 from control import ThymioControl
 from Kalman import Kalman
@@ -24,8 +24,8 @@ centroids = {'goal': (0, 0), 'thymio': (0, 0), 'green': (0, 0), 'blue': (0, 0)}
 theta_thymio = 0
 localization = None
 
-kalman = Kalman(NOISE_POS_XY, NOISE_POS_XY, NOISE_POS_THETA, NOISE_MEASURE_XY, NOISE_MEASURE_XY)
-thymio = ThymioControl(position=(0,0), angle=0)
+kalman = Kalman()
+thymio = ThymioControl()
 
 def compute_centroids():
     global centroids, theta_thymio, localization
