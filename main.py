@@ -56,6 +56,7 @@ thymio.position = (centroids['thymio'][0], centroids['thymio'][1])
 thymio.angle = theta_thymio
 path = discretize_map(segmentation, centroids)
 thymio.set_path(path)
+
 # start updating position and follow path
 image_timer = RepeatedTimer(1.5, compute_centroids)
 odometry_timer = RepeatedTimer(ODOMETRY_INTERVAL, odometry)

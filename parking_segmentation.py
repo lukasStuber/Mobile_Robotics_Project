@@ -14,7 +14,6 @@ high_V = max_value
 kernel_size = 3
 
 window_detection_name = 'Parking Detection'
-
 low_H_name = 'Low H'
 low_S_name = 'Low S'
 low_V_name = 'Low V'
@@ -76,7 +75,7 @@ def kernel_size_trackbar(val):
 ## [kernel settings for mask]
 
 ## [rescale frame to speed up computation]
-def rescale_frame(frame, scale_percent=20):
+def rescale_frame(frame, scale_percent):
     width = int(frame.shape[1] * scale_percent / 100)
     height = int(frame.shape[0] * scale_percent / 100)
     dsize = (width, height)
@@ -104,7 +103,7 @@ def order_points(pts):
     rect[3] = pts[np.argmax(diff)]
     # return the ordered coordinates
     return rect.astype('int')
-
+    
 def find_dest(pts):
     (tl, tr, br, bl) = pts
     # Finding the maximum width.
@@ -123,13 +122,7 @@ def find_dest(pts):
 ## [functions for homomorphy]
 
 def set_parking_limits(camera_device):
-    global low_H
-    global high_H
-    global low_S
-    global high_S
-    global low_V
-    global high_V
-    global kernel_size
+    global low_H, high_H, low_S, high_S, low_V, high_V, kernel_size
 
     ## [cap]
     cap = cv.VideoCapture(camera_device)
