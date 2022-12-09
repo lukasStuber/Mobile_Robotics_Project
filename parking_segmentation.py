@@ -14,7 +14,6 @@ high_V = max_value
 kernel_size = 3
 
 window_detection_name = 'Parking Detection'
-
 low_H_name = 'Low H'
 low_S_name = 'Low S'
 low_V_name = 'Low V'
@@ -76,7 +75,7 @@ def kernel_size_trackbar(val):
 ## [kernel settings for mask]
 
 ## [rescale frame to speed up computation]
-def rescale_frame(frame, scale_percent=20):
+def rescale_frame(frame, scale_percent):
     width = int(frame.shape[1] * scale_percent / 100)
     height = int(frame.shape[0] * scale_percent / 100)
     dsize = (width, height)
@@ -104,7 +103,7 @@ def order_points(pts):
     rect[3] = pts[np.argmax(diff)]
     # return the ordered coordinates
     return rect.astype('int')
-
+    
 def find_dest(pts):
     (tl, tr, br, bl) = pts
     # Finding the maximum width.

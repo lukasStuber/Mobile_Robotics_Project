@@ -15,7 +15,7 @@ id_camera = 1
 corners, destination_corners = set_parking_limits(id_camera)
 ##[Color segmentation]
 segmentation, refined_color_dict_HSV, kernels, openings = get_color_mask(id_camera, corners, destination_corners)
-cv.namedWindow("Segmentation Result")
+cv.namedWindow("Segmentation Result", )
 cv.imshow("Segmentation Result", segmentation)
 key = cv.waitKey(0)
 cv.destroyWindow("Segmentation Result")
@@ -54,6 +54,7 @@ thymio.position = (centroids['thymio'][0], centroids['thymio'][1])
 thymio.angle = theta_thymio
 path = discretize_map(segmentation, centroids)
 thymio.set_path(path)
+
 # start updating position and follow path
 image_timer = RepeatedTimer(1.5, compute_centroids)
 odometry_timer = RepeatedTimer(ODOMETRY_INTERVAL, odometry)
