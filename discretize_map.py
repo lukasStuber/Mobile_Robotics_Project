@@ -24,9 +24,9 @@ def delete_outliers(data):  # could be parallelized too
     return main_data
 
 def discretize_map(final_seg, centroids):
-    map_arr = final_seg
+    map_arr = final_seg.copy()
     size_x, size_y, _ = map_arr.shape
-    kernel = 6
+    kernel = 4
 
     path_arr = np.zeros([size_x//(2*kernel+1), size_y//(2*kernel+1)], np.uint8)
     path_x, path_y = path_arr.shape
@@ -67,6 +67,8 @@ def discretize_map(final_seg, centroids):
                 path_arr[patch] = 0
             # free space
             else: path_arr[patch] = 0
+    #cv2.imshow("title",path_arr)
+    #   key = cv2.waitKey(0)
 
     end_patch = np.array(end_patch)
     end_patch = np.array(delete_outliers(end_patch))
@@ -98,37 +100,21 @@ def discretize_map(final_seg, centroids):
     # Run A*
     path, visitedNodes = A_Star(start, goal, h, coords, path_arr, movement_type="8N", max_val=path_arr.shape)
     path = np.array(path).reshape(-1, 2)
+    path[:, [1,0]] = path[:, [0,1]]
+    a,b = path.shape
+    path_short = path[np.arange(0,a,5)]
+    path_short[-1,:] = path[-1,:]
+    path_image = path_short.copy()
+    path_short = path_short*(2*kernel + 1)
 
     cmap = colors.ListedColormap(['white', 'red'])
-    fig_astar, ax_astar = create_empty_plot((path_y, path_x))  # this plot is in reduced shape, should plot this after expansion
+    fig_astar, ax_astar = create_empty_plot((path_y, path_x))
     ax_astar.imshow(path_arr, cmap=cmap)
     ax_astar.plot(path[:,1], path[:,0], marker="o", color = 'blue')
     ax_astar.scatter(start[1], start[0], marker="o", color = 'green', s=200)
     ax_astar.scatter(goal[1], goal[0], marker="o", color = 'purple', s=200)
-    ax_astar.invert_yaxis()  # add this just to invert y axis
     plt.show()
-
-    # Space path points with kernel size
     path = path*(2*kernel + 1)
-    # Exchange x and y coordinates of path points from A*
-    # path[:, [1,0]] = path[:, [0,1]]  # we should not do that, cf imshow below already good order
-    a,b = path.shape
-    # Sample 1/5 of path points 
-    path_short = path[np.arange(0,a,5)]
-    # Reverse order of path points
-    path_short[-1,:] = path[-1,:]
-
-    return path_short
-
-if __name__ == '__main__':
-    segmentation = cv2.imread("/Users/antoineescoyez/Desktop/micro452/Project/Mobile_Robotics_Project/Astar_test.png")
-    cv2.imshow("Plot", segmentation)
-    k = cv2.waitKey(0)
-    cv2.destroyWindow("Plot")
-    path = discretize_map(segmentation, None)
-    test = segmentation.copy()
-    for point in path:
-        test[point[0], point[1], :] = np.array([255, 255, 255])
-    cv2.imshow("Plot", test)
-    k = cv2.waitKey(0)
-    cv2.destroyWindow("Plot")
+    path[:, [1,0]] = path[:, [0,1]]
+    print(path)
+    return path

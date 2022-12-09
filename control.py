@@ -99,6 +99,7 @@ class ThymioControl:
         self.obst_direction = 1 if speed[0] < speed[1] else -1 # turn left when obstacle on the left and vice versa
         self.move(speed[0], speed[1])
 
+# ODOMETRY
 # OTHER
     def keyboard(self):
         import keyboard

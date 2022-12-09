@@ -11,7 +11,3 @@ segmentation = np.array(image)
 #print(segmentation.shape)
 #print(segmentation[420, 800, :])
 path = discretize_map(segmentation, None)
-test = segmentation.copy()
-for coord in path:
-    test[coord[1], coord[0], :] = (255,0,0)
-cv.imwrite('color_img.jpg', test)
