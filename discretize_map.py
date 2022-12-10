@@ -81,18 +81,12 @@ def discretize_map(final_seg):
     goal = (goal_x, goal_y)
 
     start_patch_green = np.array(start_patch_green)
-    print(start_patch_green)
-    print(start_patch_green.shape)
-    start_patch_green = np.array(delete_outliers(start_patch_green))
-    print(start_patch_green.shape)
+    start_patch_green = delete_outliers(start_patch_green)
     green_x = (min(start_patch_green[:,0])+max(start_patch_green[:,0]))//2
     green_y = (min(start_patch_green[:,1])+max(start_patch_green[:,1]))//2
     
     start_patch_blue = np.array(start_patch_blue)
-    print(start_patch_blue)
-    print(start_patch_blue.shape)
-    start_patch_blue = np.array(delete_outliers(start_patch_blue))
-    print(start_patch_blue.shape)
+    start_patch_blue = delete_outliers(start_patch_blue)
     blue_x = (min(start_patch_blue[:,0])+max(start_patch_blue[:,0]))//2
     blue_y = (min(start_patch_blue[:,1])+max(start_patch_blue[:,1]))//2
 
@@ -114,6 +108,7 @@ def discretize_map(final_seg):
     a,b = path.shape
     path_short = path[np.arange(0,a,5)]
     path_short[-1,:] = path[-1,:]
+    path_short = only_corners_path(path_short)
     path_image = path_short.copy()
     path_short = path_short*(2*kernel + 1)
 
@@ -123,6 +118,7 @@ def discretize_map(final_seg):
     image_arr = np.zeros((path_x, path_y, 3), np.uint8)
     image_arr[:,:,1] = path_arr.copy()*255
     image_arr[:,:,2] = path_arr.copy()*255
+    #for point in path_image:
     for point in path_image:
         image_arr = cv2.circle(image_arr, point, 0, (255,0,255), -1)
     start_x, start_y = start
