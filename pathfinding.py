@@ -50,7 +50,7 @@ def only_corners_path(path):
         norm_a = np.sqrt(x_a**2 + y_a**2)
         norm_b = np.sqrt(x_b**2 + y_b**2)
         normalized_dot_product = (x_a * x_b + y_a * y_b) / (norm_a * norm_b)
-        if np.abs(normalized_dot_product - 1) < tolerance_points_aligned:
+        if np.abs(normalized_dot_product - 1) < PATHFINDING_TOL:
             test_if_aligned.pop(1)
         else:
             only_corners_path.append(test_if_aligned.pop(0))

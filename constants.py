@@ -7,6 +7,7 @@ NOISE_POS_XY = 0.64 # mm^2
 NOISE_POS_THETA = 2 # rad^2
 NOISE_MEASURE_XY = 0.8 # mm^2
 NOISE_MEASURE_THETA = 0.5 # rad^2
+PATHFINDING_TOL = 0.03 # 1-cos(min_angle)
 # robot constants
 WHEEL_DIST = 95 # mm
 WHEEL_RADIUS = 22 # mm
