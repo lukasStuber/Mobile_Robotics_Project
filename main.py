@@ -42,13 +42,6 @@ def odometry():
     thymio.angle = kalman.x[2, 0]
     #print(thymio.position[0], thymio.position[1], thymio.angle*180/math.pi)
 
-# def plot_localization():
-#     global localization
-#     cv.namedWindow("Localization Result")
-#     cv.imshow("Localization Result", localization)
-#     key = cv.waitKey(30)
-#     cv.destroyWindow("Localization Result")
-
 # initialise position and path
 compute_centroids()
 kalman.set_state((centroids['thymio'][0], centroids['thymio'][1], theta_thymio))
@@ -63,3 +56,11 @@ odometry_timer = RepeatedTimer(ODOMETRY_INTERVAL, odometry)
 image_timer.start()
 odometry_timer.start()
 thymio.follow_path()
+
+# start disolay position
+cv.namedWindow("Localization Result")
+while True:
+    cv.imshow("Localization Result", localization)
+    key = cv.waitKey(30)
+    if key == ord('q'):
+        break
