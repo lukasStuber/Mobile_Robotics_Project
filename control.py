@@ -115,7 +115,7 @@ class ThymioControl:
     def crab_rave(self):
         program = '''
 var note[19] = [2349, 1976, 1568, 1568, 2349, 2349, 1760, 1397, 1397, 2349, 2349, 1760, 1397, 1397, 2094, 2094, 1319, 1319, 1397]
-var duration[19] = [2, 2, 2, 1, 2, 1, 2, 2, 2, 2, 1, 2, 2, 1, 2, 2, 2, 1, 1]
+var duration[19] = [2, 2, 2, 1, 2, 1, 2, 2, 1, 2, 1, 2, 2, 1, 2, 2, 2, 1, 2]
 var i = 1
 var play = 1
 call sound.freq(note[0]/2, 8*duration[0])
