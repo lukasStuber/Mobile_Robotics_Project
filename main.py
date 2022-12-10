@@ -54,11 +54,11 @@ compute_centroids()
 kalman.set_state((centroids['thymio'][0], centroids['thymio'][1], theta_thymio))
 thymio.position = (centroids['thymio'][0], centroids['thymio'][1])
 thymio.angle = theta_thymio
-path = discretize_map(segmentation, centroids)
+path = discretize_map(segmentation)
 thymio.set_path(path)
 
 # start updating position and follow path
-image_timer = RepeatedTimer(1.5, compute_centroids)
+image_timer = RepeatedTimer(1.0, compute_centroids)
 odometry_timer = RepeatedTimer(ODOMETRY_INTERVAL, odometry)
 image_timer.start()
 odometry_timer.start()

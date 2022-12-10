@@ -89,7 +89,8 @@ class ThymioControl:
     def avoid_obstacles(self):
         self.stop_planned = False
         self.stop_timer.cancel()
-        speed = np.dot(self.proxs, [[1, -1], [3, -3], [-3, 3], [-3, 3], [-1, 1]])/100
+        #speed = np.dot(self.proxs, [[1, -1], [3, -3], [-3, 3], [-3, 3], [-1, 1]])/100
+        speed = np.dot(self.proxs, [[3, -3], [1, -1], [-1, -1], [-1, 1], [-3, 3]])/100
         if (np.sum(self.proxs[1:4]) < 30): # if no obstacle in front, move forward
            speed[0] += 100; speed[1] += 100
         self.obst_direction = 1 if speed[0] < speed[1] else -1 # turn left when obstacle on the left and vice versa

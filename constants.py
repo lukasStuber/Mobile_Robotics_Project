@@ -6,8 +6,8 @@ MOVE_INTERVAL = 0.21 # s # leave time for get_prox() and move() (100ms each)
 ODOMETRY_INTERVAL = 0.025 # s
 # MOVEMENT
 STANDARD_SPEED = 200 # 32cm/5s
-DIST_TOL = 10 # mm
-ANGLE_TOL = 0.1 # rad
+DIST_TOL = 20 # mm
+ANGLE_TOL = 0.4 # rad
 MAX_TIME = 0.3
 TIME_FACTOR = 0.75
 # OBSTACLE AVOIDANCE
