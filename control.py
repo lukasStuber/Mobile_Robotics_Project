@@ -36,7 +36,7 @@ class ThymioControl:
 
     def timed_move(self, l_speed, r_speed, time):
         self.stop_planned = True
-        self.stop_timer = Timer(time, self.stop)
+        self.stop_timer = Timer(time - 0.1, self.stop)  # compensate stopping delay
         self.move(l_speed, r_speed)
         self.stop_timer.start()
 
@@ -62,11 +62,13 @@ class ThymioControl:
             angle = (math.atan2(goal[1] - self.position[1], goal[0] - self.position[0]) - self.angle + math.pi) % (2*math.pi) - math.pi
             if abs(angle) > ANGLE_TOL:
                 direction = 1 if angle > 0 else -1 # 1 = turn left, -1 = turn right
-                t = abs(angle)*WHEEL_DIST / (2*STANDARD_SPEED*SPEED_TO_MMS) # remove the await delay of move()
-                self.timed_move(direction*STANDARD_SPEED, -direction*STANDARD_SPEED, t*TIME_FACTOR - 0.1) # prevent overshoots
+                t = abs(angle)*WHEEL_DIST / (2*STANDARD_SPEED*SPEED_TO_MMS)
+                t = min(t, MAX_TIME) # allow Kalman updates
+                self.timed_move(direction*STANDARD_SPEED, -direction*STANDARD_SPEED, t)
             else:
-                t = dist / (STANDARD_SPEED*SPEED_TO_MMS) # remove the await delay of move()
-                self.timed_move(STANDARD_SPEED, STANDARD_SPEED, t*TIME_FACTOR - 0.1) # prevent overshoots
+                t = dist / (STANDARD_SPEED*SPEED_TO_MMS)
+                t = min(t, MAX_TIME) # allow Kalman updates
+                self.timed_move(STANDARD_SPEED, STANDARD_SPEED, t)
         else:
             self.path_index += 1
             if self.path_index >= len(self.path): self.end_path()
