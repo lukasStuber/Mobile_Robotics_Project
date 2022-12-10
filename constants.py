@@ -22,6 +22,6 @@ NOMINAL_AREA_LENGTH = 1475  # [mm]
 NOMINAL_AREA_WIDTH = 730    # [mm]
 
 NOISE_POS_XY = 0.64         # [mm2]
-NOISE_POS_THETA = 1         # [rad^2]
-NOISE_MEASURE_XY = 0.1      # [mm2]
+NOISE_POS_THETA = 2         # [rad^2]
+NOISE_MEASURE_XY = 0.8      # [mm2]
 NOISE_MEASURE_THETA = 0.5     # [rad^2]
