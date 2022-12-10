@@ -2,6 +2,7 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors
+from constants import * 
 
 # A* for 2D occupancy grid. Finds a path from start to goal.
 # h is the heuristic function. h(n) estimates the cost to reach goal from node n.
@@ -37,6 +38,26 @@ def reconstruct_path(cameFrom, current):
         total_path.insert(0, cameFrom[current]) 
         current = cameFrom[current]
     return total_path
+
+def only_corners_path(path):
+    test_if_aligned = list(path.copy())
+    only_corners_path = list()
+    while len(test_if_aligned) > 2:
+        x_a = test_if_aligned[1][0] - test_if_aligned[0][0]
+        y_a = test_if_aligned[1][1] - test_if_aligned[0][1]
+        x_b = test_if_aligned[2][0] - test_if_aligned[1][0]
+        y_b = test_if_aligned[2][1] - test_if_aligned[1][1]
+        norm_a = np.sqrt(x_a**2 + y_a**2)
+        norm_b = np.sqrt(x_b**2 + y_b**2)
+        normalized_dot_product = (x_a * x_b + y_a * y_b) / (norm_a * norm_b)
+        if np.abs(normalized_dot_product - 1) < 1e-2:
+            test_if_aligned.pop(1)
+        else:
+            only_corners_path.append(test_if_aligned.pop(0))
+    assert len(test_if_aligned) == 2
+    only_corners_path = only_corners_path + test_if_aligned
+    return np.array(only_corners_path)
+
 
 def A_Star(start, goal, h, coords, occupancy_grid, movement_type="4N", max_val=(50,50)):
     # h: heuristic function (straight-line cost to reach goal from node n)
