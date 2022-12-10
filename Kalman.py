@@ -15,9 +15,9 @@ class Kalman:
         # state
         self.x = np.zeros((3, 1)) # state
         self.P = 1000*np.ones((3,3)) # state covariance
-        # process noise
-        self.R = np.diag([NOISE_POS_XY, NOISE_POS_XY, NOISE_POS_THETA**2/6])
         # measurement noise
+        self.R = np.diag([NOISE_POS_XY, NOISE_POS_XY, NOISE_POS_THETA**2/6])
+        # process noise
         self.Q = np.diag([NOISE_MEASURE_XY**2/6, NOISE_MEASURE_XY**2/6])
         # Observation Matrix H
         self.H = np.array([[1, 0, 0],

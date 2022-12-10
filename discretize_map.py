@@ -21,7 +21,7 @@ def delete_outliers(data):  # could be parallelized too
         z_score_y = abs(point[1] - mean_y) / std_y
         if z_score_x < threshold and z_score_y < threshold:
             main_data.append([point[0], point[1]])
-    return main_data
+    return np.array(main_data)
 
 def discretize_map(final_seg):
     map_arr = final_seg.copy()
@@ -67,30 +67,29 @@ def discretize_map(final_seg):
                 path_arr[patch] = 0
             # free space
             else: path_arr[patch] = 0
-    #cv2.imshow("title",path_arr)
-    #   key = cv2.waitKey(0)
 
     end_patch = np.array(end_patch)
-    end_patch = np.array(delete_outliers(end_patch))
+    end_patch = delete_outliers(end_patch)
 
     goal_x = (min(end_patch[:,0])+max(end_patch[:,0]))//2
     goal_y = (min(end_patch[:,1])+max(end_patch[:,1]))//2
     goal = (goal_x, goal_y)
 
     start_patch_green = np.array(start_patch_green)
-    start_patch_green = np.array(delete_outliers(start_patch_green))
+    start_patch_green = delete_outliers(start_patch_green)
     print(start_patch_green.shape)
     green_x = (min(start_patch_green[:,0])+max(start_patch_green[:,0]))//2
     green_y = (min(start_patch_green[:,1])+max(start_patch_green[:,1]))//2
     
     start_patch_blue = np.array(start_patch_blue)
-    start_patch_blue = np.array(delete_outliers(start_patch_blue))
+    start_patch_blue = delete_outliers(start_patch_blue)
     print(start_patch_blue.shape)
     blue_x = (min(start_patch_blue[:,0])+max(start_patch_blue[:,0]))//2
     blue_y = (min(start_patch_blue[:,1])+max(start_patch_blue[:,1]))//2
 
     start = ((blue_x+green_x)//2, (blue_y+green_y)//2)
 
+    # prepare the objects for the A*
     x,y = np.mgrid[0:path_x:1, 0:path_y:1]
     pos = np.empty(x.shape + (2,))
     pos[:, :, 0] = x; pos[:, :, 1] = y
