@@ -6,12 +6,13 @@ SPEED_TO_MMS = 0.32
 # TIMERS
 MOVE_INTERVAL = 0.21 # s # leave time for get_prox() and move() (100ms each)
 ODOMETRY_INTERVAL = 0.025 # s
+IMAGE_PROCESSING_INTERVAL = 1.0 # s
 # MOVEMENT
 STANDARD_SPEED = 200 # 32cm/5s
 DIST_TOL = 20 # mm
 ANGLE_TOL = 0.4 # rad
 MAX_TIME = 0.3
-TIME_FACTOR = 0.75
+TIME_FACTOR = 0.5
 # OBSTACLE AVOIDANCE
 PROX_THRESHOLD = 1000
 OBST_SPEED = 200
@@ -30,3 +31,4 @@ NOISE_MEASURE_THETA = 0.5     # [rad^2]
 
 #PATH FINDING
 angle_tolerance = 2*math.pi/180
+tolerance_points_aligned = 0.03

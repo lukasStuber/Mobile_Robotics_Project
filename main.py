@@ -58,7 +58,7 @@ path = discretize_map(segmentation)
 thymio.set_path(path)
 
 # start updating position and follow path
-image_timer = RepeatedTimer(1.0, compute_centroids)
+image_timer = RepeatedTimer(IMAGE_PROCESSING_INTERVAL, compute_centroids)
 odometry_timer = RepeatedTimer(ODOMETRY_INTERVAL, odometry)
 image_timer.start()
 odometry_timer.start()
