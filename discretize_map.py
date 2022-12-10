@@ -35,9 +35,9 @@ def delete_outliers(data):  # could be parallelized too
         z_score_y = abs(point[1] - mean_y) / std_y
         if z_score_x < threshold and z_score_y < threshold:
             main_data.append([point[0], point[1]])
-    return main_data
+    return np.array(main_data)
 
-def discretize_map(final_seg, centroids):
+def discretize_map(final_seg):
     map_arr = final_seg.copy()
     size_x, size_y, _ = map_arr.shape
     kernel = 4
@@ -74,7 +74,7 @@ def discretize_map(final_seg, centroids):
                path_arr[patch] = 1
 
     end_patch = np.array(end_patch)
-    end_patch = np.array(delete_outliers(end_patch))
+    end_patch = delete_outliers(end_patch)
 
     goal_x = (min(end_patch[:,0])+max(end_patch[:,0]))//2
     goal_y = (min(end_patch[:,1])+max(end_patch[:,1]))//2
@@ -98,6 +98,7 @@ def discretize_map(final_seg, centroids):
 
     start = ((blue_x+green_x)//2, (blue_y+green_y)//2)
 
+    # prepare the objects for the A*
     x,y = np.mgrid[0:path_x:1, 0:path_y:1]
     pos = np.empty(x.shape + (2,))
     pos[:, :, 0] = x; pos[:, :, 1] = y
