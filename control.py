@@ -63,10 +63,10 @@ class ThymioControl:
             if abs(angle) > ANGLE_TOL:
                 direction = 1 if angle > 0 else -1 # 1 = turn left, -1 = turn right
                 t = abs(angle)*WHEEL_DIST / (2*STANDARD_SPEED*SPEED_TO_MMS) - 0.1 # remove the await delay of move()
-                self.timed_move(direction*STANDARD_SPEED, -direction*STANDARD_SPEED, t) # let kalman correct halfway
+                self.timed_move(direction*STANDARD_SPEED, -direction*STANDARD_SPEED, t*TIME_FACTOR) # let kalman correct halfway
             else:
                 t = dist / (STANDARD_SPEED*SPEED_TO_MMS) - 0.1 # remove the await delay of move()
-                self.timed_move(STANDARD_SPEED, STANDARD_SPEED, t) # let kalman correct halfway
+                self.timed_move(STANDARD_SPEED, STANDARD_SPEED, t*TIME_FACTOR) # let kalman correct halfway
         else:
             self.path_index += 1
             if self.path_index >= len(self.path): self.end_path()

@@ -1,9 +1,3 @@
-'''
-constant.py
-Module defining all the constants used to control the robot
-'''
-import math
-
 # control constants
 WHEEL_DIST = 95 # mm
 SPEED_TO_MMS = 0.32
@@ -15,6 +9,7 @@ STANDARD_SPEED = 200 # 32cm/5s
 DIST_TOL = 10 # mm
 ANGLE_TOL = 0.1 # rad
 MAX_TIME = 0.3
+TIME_FACTOR = 0.75
 # OBSTACLE AVOIDANCE
 PROX_THRESHOLD = 1000
 OBST_SPEED = 200
