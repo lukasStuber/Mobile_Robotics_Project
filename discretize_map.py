@@ -23,7 +23,7 @@ def delete_outliers(data):  # could be parallelized too
             main_data.append([point[0], point[1]])
     return main_data
 
-def discretize_map(final_seg, centroids):
+def discretize_map(final_seg):
     map_arr = final_seg.copy()
     size_x, size_y, _ = map_arr.shape
     kernel = 4
