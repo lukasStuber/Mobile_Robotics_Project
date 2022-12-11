@@ -118,7 +118,6 @@ def discretize_map(final_seg):
     image_arr = np.zeros((path_x, path_y, 3), np.uint8)
     image_arr[:,:,1] = path_arr.copy()*255
     image_arr[:,:,2] = path_arr.copy()*255
-    #for point in path_image:
     for point in path_image:
         image_arr = cv2.circle(image_arr, point, 0, (255,0,255), -1)
     start_x, start_y = start
@@ -132,10 +131,10 @@ def discretize_map(final_seg):
     cv2.namedWindow(window_big, cv2.WINDOW_NORMAL)
     image_big_arr = final_seg.copy()
     for point in path_short:
-        image_big_arr = cv2.circle(image_big_arr, point, kernel, (255,0,255), -1)
+        image_big_arr = cv2.circle(image_big_arr, point, 12, (255,0,255), -1)
     cv2.imshow(window_big, image_big_arr)
     cv2.resizeWindow(window_big, path_y*kernel, path_x*kernel)
-
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
     return path_short
