@@ -2,6 +2,7 @@ from __future__ import print_function
 import cv2 as cv
 import argparse
 import numpy as np
+from constants import *
 
 max_value = 255
 max_value_H = 360//2
@@ -168,7 +169,7 @@ def get_color_mask(camera_device, corners, destination_corners, real_size=(1600,
             h, l = cropped_frame.shape[:2]
             L, H = real_size
             inflate_mm = 45  # thymio length is 110 mm
-            inflate_pixel = (int((2 * inflate_mm + 1) * l/L), int((2 * inflate_mm + 1) * h/H))
+            inflate_pixel = (int((2 * INFLATE_WIDTH + 1) * l/L), int((2 * INFLATE_LENGTH + 1) * h/H))
             if color == "yellow":
                 color_mask = cv.dilate(color_mask, np.ones(inflate_pixel, np.uint8))
             ## [Enlarge obstacles]
