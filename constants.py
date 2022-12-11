@@ -15,7 +15,7 @@ SPEED_TO_MMS = 0.32
 # timers
 MOVE_INTERVAL = 0.21 # s # allow for get_prox() and move() (100ms each)
 ODOMETRY_INTERVAL = 0.025 # s
-IMAGE_PROCESSING_INTERVAL = 1.0 # s
+IMAGE_PROCESSING_INTERVAL = 1.5 # s
 # movement
 STANDARD_SPEED = 200 # 32cm/5s
 DIST_TOL = 10 # mm
