@@ -56,6 +56,8 @@ def only_corners_path(path):
             only_corners_path.append(test_if_aligned.pop(0))
     assert len(test_if_aligned) == 2
     only_corners_path = only_corners_path + test_if_aligned
+    # Delete starting point to avoid weird moves at first (especially getting out of map)
+    only_corners_path.pop(0)
     return np.array(only_corners_path)
 
 
