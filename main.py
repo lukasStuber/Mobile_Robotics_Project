@@ -59,5 +59,5 @@ thymio.follow_path()
 cv.namedWindow("Localization Result")
 while True:
     cv.imshow("Localization Result", localization)
-    key = cv.waitKey(30)
+    key = cv.waitKey(15)
     if key == ord('q'): break
